@@ -61,6 +61,21 @@ class Coche extends THREE.Object3D{
                 );
             }
         );
+
+        /* this.position.y = 30; */
+        this.rotateX(-Math.PI/2);
+        /* this.scale(2, 2, 2); */
+
+        /* materialLoader.load('Car.mtl',
+            (materials) => {
+                objectLoader.setMaterials(materials);
+                objectLoader.load('Car.obj',
+                    (object) => {
+                        this.add(object);
+                    }, null, null
+                );
+            }
+        ); */
         
         this.createGUI(gui, titleGui);
     }

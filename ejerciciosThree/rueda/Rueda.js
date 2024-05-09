@@ -8,17 +8,11 @@ class Rueda extends THREE.Object3D{
 
         const radio = 1;
         const rueda = new THREE.Shape();
-        rueda.absarc(0, 0, radio, 0, Math.PI/2, false);
-        rueda.absarc(0, 0, radio, Math.PI/2, Math.PI, false);
-        rueda.absarc(0, 0, radio, Math.PI, Math.PI*1.75, false);
-        rueda.absarc(0, 0, radio, Math.PI*1.75, Math.PI*2, false);
+        rueda.absarc(0, 0, radio, 0.1, Math.PI*2, false);
 
         const holePath = new THREE.Path();
         const holeRadius = 0.9;
-        holePath.absarc(0, 0, holeRadius, 0, Math.PI/2, true);
-        holePath.absarc(0, 0, holeRadius, Math.PI/2, Math.PI, true);
-        holePath.absarc(0, 0, holeRadius, Math.PI, Math.PI*1.75, true);
-        holePath.absarc(0, 0, holeRadius, Math.PI*1.75, Math.PI*2, true);
+        holePath.absarc(0, 0, holeRadius, 0, Math.PI*2+0.1, true);
         rueda.holes.push(holePath);
 
         const extrudeSettings = {
@@ -27,7 +21,8 @@ class Rueda extends THREE.Object3D{
             bevelEnabled: true,
             bevelThickness: 0.15,
 			bevelSize: 0.1,
-            bevelSegments: 30
+            bevelSegments: 30,
+            curveSegments: 50
         };
 
         const geometry = new THREE.ExtrudeGeometry(rueda, extrudeSettings);

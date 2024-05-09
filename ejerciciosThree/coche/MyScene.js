@@ -121,7 +121,7 @@ class MyScene extends THREE.Scene {
       .onChange ( (value) => this.setLightPower(value) );
     
     // Otro para la intensidad de la luz ambiental
-    folder.add (this.guiControls, 'ambientIntensity', 0, 1, 0.05)
+    folder.add (this.guiControls, 'ambientIntensity', 0, 10, 0.05)
       .name('Luz ambiental: ')
       .onChange ( (value) => this.setAmbientIntensity(value) );
       

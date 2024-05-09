@@ -8,7 +8,7 @@ class Bala extends THREE.Object3D{
         material.flatShading = true;
         material.needsUpdate = true;
 
-        /* this.perfil = [
+        this.perfil = [
             new THREE.Vector2(0.0, 0.0),
             new THREE.Vector2(0.16, 0),
             new THREE.Vector2(0.16, 0.02),
@@ -24,9 +24,9 @@ class Bala extends THREE.Object3D{
             new THREE.Vector2(0.11, 1.3),
             new THREE.Vector2(0.11, 1.45),
             new THREE.Vector2(0, 2),
-        ]; */
+        ];
 
-        this.perfil = [
+        /* this.perfil = [
             new THREE.Vector2(0.0, 0.0),
             new THREE.Vector2(0.16, 0.0),
             new THREE.Vector2(0.16, 0.03),
@@ -43,11 +43,12 @@ class Bala extends THREE.Object3D{
             new THREE.Vector2(0.04, 0.97),
             new THREE.Vector2(0.02, 0.98),
             new THREE.Vector2(0, 0.98),
-        ];
+        ]; */
 
         const segments = 50;
 
         const geometry = new THREE.LatheGeometry(this.perfil, segments, 0, 2*Math.PI);
+        geometry.scale(0.5, 0.5, 0.5);
         const figure = new THREE.Mesh(geometry, material);
 
         this.add(figure);
