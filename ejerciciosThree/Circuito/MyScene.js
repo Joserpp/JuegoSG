@@ -8,7 +8,7 @@ import { Stats } from '../libs/stats.module.js'
 
 // Clases de mi proyecto
 
-import { MyBox } from './circuito.js'
+import { Circuito } from './Circuito.js'
 
 /// La clase fachada del modelo
 /**
@@ -45,7 +45,7 @@ class MyScene extends THREE.Scene {
     // Por último creamos el modelo.
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
-    this.model = new MyBox(this.gui, "barrido");
+    this.model = new Circuito(this.gui, "barrido");
     this.add (this.model);
 
   }
@@ -77,7 +77,7 @@ class MyScene extends THREE.Scene {
     //   El ángulo del campo de visión en grados sexagesimales
     //   La razón de aspecto ancho/alto
     //   Los planos de recorte cercano y lejano
-    this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 50);
+    this.camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 50);
     // Recuerda: Todas las unidades están en metros
     // También se indica dónde se coloca
     this.camera.position.set (4, 2, 4);
@@ -127,7 +127,7 @@ class MyScene extends THREE.Scene {
     this.guiControls = {
       // En el contexto de una función   this   alude a la función
       lightPower : 500.0,  // La potencia de esta fuente de luz se mide en lúmenes
-      ambientIntensity : 0.5,   
+      ambientIntensity : 10,   
       axisOnOff : true
     }
 
