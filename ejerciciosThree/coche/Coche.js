@@ -21,7 +21,7 @@ class Coche extends THREE.Object3D{
                 objectLoader.setMaterials(materials);
                 objectLoader.load(obj,
                     (object) => {
-                        object.scale.set(0.01,0.01,0.01);
+                        object.scale.set(0.005,0.005,0.005);
                         this.add(object);
                     }, null, null
                 );
