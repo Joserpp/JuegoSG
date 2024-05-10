@@ -40,10 +40,7 @@ class MyScene extends THREE.Scene {
     
     // Tendremos una cámara con un control de movimiento con el ratón
     /* this.createCamera (); */
-    
-    // Un suelo 
-/*     this.createGround ();
- */
+
     //ejes
     this.createAxes();
 
@@ -51,19 +48,169 @@ class MyScene extends THREE.Scene {
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
     this.circuito = new Circuito(this.gui, "barrido");
-    /* this.model = new CircuitoFinal(this.gui, "barrido", this.circuito.getGeometria()); */
     this.coche = new Coche(this.gui,"coche", '../coche/10600_RC_ Car_SG_v2_L3.mtl', '../coche/10600_RC_ Car_SG_v2_L3.obj');
     
-    /**************************************************/
     this.coche.translateZ(0.2);
+    this.animacionCoche();
+
+    ////////////////////////////////////////////
+    //Animacion de la rueda
+    ///////////////////////////////////////////
+
+    /* this.rueda = new Rueda(this.gui, "Rueda");
+
+    this.rueda.scale.set(0.1,0.1,0.1);
+
+    this.spline2 = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(-1.5,1,0),
+        new THREE.Vector3(-1.2,1.5,0.5),
+        new THREE.Vector3(-1.2,1.0,0.5),
+        new THREE.Vector3(-1.5,1.5,0),
+        new THREE.Vector3(-1.5,1,0)]);
+
+        this.segmentos1 = 100;
+        this.binormales1 = this.spline2.computeFrenetFrames(this.segmentos1,true).binormals;
+        var origen1={t : 0};
+        var fin1={t : 1};
+        var tiempoDeRecorrido1 = 3000;
+
+    var animacion1 = new TWEEN.Tween(origen1).to(fin1, tiempoDeRecorrido1)
+    .onUpdate(() => {
+        var posicion1 = this.spline2.getPointAt(origen1.t);
+        this.rueda.position.copy(posicion1);
+        var tangent1 = this.spline2.getTangentAt(origen1.t);
+        posicion1.add(tangent1); 
+        this.rueda.up = this.binormales1[Math.floor(origen.t * this.segmentos1)];
+        this.rueda.lookAt(posicion1); 
+    })
+    .onComplete(() => {origen1.t=0.1;
+        var time1 = tiempoDeRecorrido1*0.5;
+        animacion1.duration(time1);
+        animacion1.start();
+    })
+    .repeat(Infinity)
+    .start();
+
+    function animate1() {
+        requestAnimationFrame(animate1);
+        TWEEN.update();
+    }
+    animate1();
+
+    this.add(this.rueda); */
+
+    /* window.addEventListener("keydown", (event) => this.onKeyDown(event));
+    window.addEventListener("keyup", (event) => this.onKeyUp(event)); */
+  
+    /* this.createCamaraSubjetiva(this.nodo); */
+
+    this.createCameras();
+
+    this.nodo.add(this.coche);
+    this.add(this.circuito); 
+    this.add(this.nodo);
+
+    
+  }
+
+  createAxes() {
+    // Crear ejes con una longitud de 1 metro
+    this.axis = new THREE.AxesHelper(4);
+    this.add(this.axis);
+  }
+
+  initStats() {
+  
+    var stats = new Stats();
+    
+    stats.setMode(0); // 0: fps, 1: ms
+    
+    // Align top-left
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.left = '0px';
+    stats.domElement.style.top = '0px';
+    
+    $("#Stats-output").append( stats.domElement );
+    
+    this.stats = stats;
+  }
+
+  createCamaraSubjetiva(/* nodo */) {
+
+    this.camara = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 50);
+    /* nodo.add(this.camara); */
+    this.camara.position.set(0, 0.5, -1.5);
+
+    var puntoDeMiraRelativo = new THREE.Vector3(0, 0.5, 0);
+
+    var target = new THREE.Vector3();
+    this.camara.getWorldPosition(target);
+
+    target.add(puntoDeMiraRelativo);
+
+    this.camara.lookAt(target);
+    return this.camara;
+  }
+
+  createCameraGeneral () {
+    // Para crear una cámara le indicamos
+    //   El ángulo del campo de visión en grados sexagesimales
+    //   La razón de aspecto ancho/alto
+    //   Los planos de recorte cercano y lejano
+    this.camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 50);
+    // Recuerda: Todas las unidades están en metros
+    // También se indica dónde se coloca
+    this.camera.position.set (4, 2, 4);
+    // Y hacia dónde mira
+    var look = new THREE.Vector3 (0,0,0);
+    this.camera.lookAt(look);
+    /* this.add (this.camera); */
+    
+    // Para el control de cámara usamos una clase que ya tiene implementado los movimientos de órbita
+    this.cameraControl = new TrackballControls (this.camera, this.renderer.domElement);
+    // Se configuran las velocidades de los movimientos
+    this.cameraControl.rotateSpeed = 5;
+    this.cameraControl.zoomSpeed = -2;
+    this.cameraControl.panSpeed = 0.5;
+    // Debe orbitar con respecto al punto de mira de la cámara
+    this.cameraControl.target = look;
+
+    return this.camera;
+  }
+
+  createCameras(){
+
+    this.camaraSubjetiva = this.createCamaraSubjetiva();
+    this.camaraGeneral = this.createCameraGeneral();
+
+    this.camaraActiva = this.camaraGeneral;
+    this.add(this.camaraActiva);
+  }
+  
+  cambiarCamara(event){
+    if(event.which === 32){
+      if(this.camaraActiva === this.camaraSubjetiva){
+        this.nodo.remove(this.camaraSubjetiva);
+        this.camaraActiva = this.camaraGeneral;
+        this.add(this.camaraGeneral);
+      }
+      else if(this.camaraActiva === this.camaraGeneral){
+        this.remove(this.camaraGeneral);
+        this.camaraActiva = this.camaraSubjetiva;
+        this.nodo.add(this.camaraSubjetiva);
+      }
+    }
+  }
+
+  animacionCoche(){
+
     var geometriaTubo = this.circuito.getGeometria();
     this.tubo = geometriaTubo;
     this.path = geometriaTubo.parameters.path;
     this.radio = geometriaTubo.parameters.radius;
     this.segmentos = geometriaTubo.parameters.tubularSegments;
     
-    this.nodo = new THREE.Object3D(); 
-    this.createCamaraSubjetiva(this.nodo);
+    this.nodo = new THREE.Object3D();
     
     var t = 1;
     var posTmp = this.path.getPointAt(t);
@@ -71,38 +218,39 @@ class MyScene extends THREE.Scene {
 
     var tangente = this.path.getTangentAt(t);
     posTmp.add(tangente);
-    var segmentoActual= Math.floor(t*this.segmentos);
-    this.nodo.up=this.tubo.binormals[segmentoActual];
+    var segmentoActual = Math.floor(t*this.segmentos);
+    this.nodo.up = this.tubo.binormals[segmentoActual];
     this.nodo.lookAt(posTmp);
 
     this.spline = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(-1.5, 0, 0),
-        new THREE.Vector3(-1.8, 0, -0.75),
-        new THREE.Vector3(0, 0.3, -1.5),
-        new THREE.Vector3(0.3, 0.3, -2.25),
-        new THREE.Vector3(0.75, 0.3, -2.7),
-        new THREE.Vector3(1.5, 0.3, -2.4),
-        new THREE.Vector3(2.1, 0.45, -2.1),
-        new THREE.Vector3(2.85, 0.45, -2.7),
-        new THREE.Vector3(3.3, 0.75, -5.1),
-        new THREE.Vector3(3.6, 0.45, -5.55),
-        new THREE.Vector3(3.9, 0.3, -6),
-        new THREE.Vector3(5.1, 0.45, -6.15),
-        new THREE.Vector3(6, 0.45, -6.15),
-        new THREE.Vector3(6.45, 0.45, -5.7),
-        new THREE.Vector3(7.2, 0.6, -5.25),
-        new THREE.Vector3(7.95, 0.75, -6.75),
-        new THREE.Vector3(8.85, 1.05, -8.25),
-        new THREE.Vector3(7.5, 1.35, -9.75),
-        new THREE.Vector3(6.75, 2.25, -8.25),
-        new THREE.Vector3(5.25, 2.25, -6.75),
-        new THREE.Vector3(3.75, 2.25, -5.25),
-        new THREE.Vector3(3.75, 2.25, -3.75),
-        new THREE.Vector3(3.75, 0, 0),
-        new THREE.Vector3(2.25, 1.5, 1.2),
-        new THREE.Vector3(0.75, 2.25, 2.4),
-        new THREE.Vector3(-1.5, 0.75, 1.2),
-        new THREE.Vector3(-1.5, 0, 0)]);
+      new THREE.Vector3(-1.5, 0, 0),
+      new THREE.Vector3(-1.8, 0, -0.75),
+      new THREE.Vector3(0, 0.3, -1.5),
+      new THREE.Vector3(0.3, 0.3, -2.25),
+      new THREE.Vector3(0.75, 0.3, -2.7),
+      new THREE.Vector3(1.5, 0.3, -2.4),
+      new THREE.Vector3(2.1, 0.45, -2.1),
+      new THREE.Vector3(2.85, 0.45, -2.7),
+      new THREE.Vector3(3.3, 0.75, -5.1),
+      new THREE.Vector3(3.6, 0.45, -5.55),
+      new THREE.Vector3(3.9, 0.3, -6),
+      new THREE.Vector3(5.1, 0.45, -6.15),
+      new THREE.Vector3(6, 0.45, -6.15),
+      new THREE.Vector3(6.45, 0.45, -5.7),
+      new THREE.Vector3(7.2, 0.6, -5.25),
+      new THREE.Vector3(7.95, 0.75, -6.75),
+      new THREE.Vector3(8.85, 1.05, -8.25),
+      new THREE.Vector3(7.5, 1.35, -9.75),
+      new THREE.Vector3(6.75, 2.25, -8.25),
+      new THREE.Vector3(5.25, 2.25, -6.75),
+      new THREE.Vector3(3.75, 2.25, -5.25),
+      new THREE.Vector3(3.75, 2.25, -3.75),
+      new THREE.Vector3(3.75, 0, 0),
+      new THREE.Vector3(2.25, 1.5, 1.2),
+      new THREE.Vector3(0.75, 2.25, 2.4),
+      new THREE.Vector3(-1.5, 0.75, 1.2),
+      new THREE.Vector3(-1.5, 0, 0)
+    ]);
 
     this.segmentos = 100;
     this.binormales = this.spline.computeFrenetFrames(this.segmentos,true).binormals;
@@ -132,145 +280,8 @@ class MyScene extends THREE.Scene {
             TWEEN.update();
         }
         animate();
-
-         ////////////////////////////////////////////
-        //Animacion de la rueda
-        ///////////////////////////////////////////
-
-        this.rueda = new Rueda(this.gui, "Rueda");
-
-        this.rueda.scale.set(0.1,0.1,0.1);
-
-        this.spline2 = new THREE.CatmullRomCurve3([
-            new THREE.Vector3(-1.5,1,0),
-            new THREE.Vector3(-1.2,1.5,0.5),
-            new THREE.Vector3(-1.2,1.0,0.5),
-            new THREE.Vector3(-1.5,1.5,0),
-            new THREE.Vector3(-1.5,1,0)]);
-
-            this.segmentos1 = 100;
-            this.binormales1 = this.spline2.computeFrenetFrames(this.segmentos1,true).binormals;
-            var origen1={t : 0};
-            var fin1={t : 1};
-            var tiempoDeRecorrido1 = 3000;
-
-        var animacion1 = new TWEEN.Tween(origen1).to(fin1, tiempoDeRecorrido1)
-        .onUpdate(() => {
-            var posicion1 = this.spline2.getPointAt(origen1.t);
-            this.rueda.position.copy(posicion1);
-            var tangent1 = this.spline2.getTangentAt(origen1.t);
-            posicion1.add(tangent1); 
-            this.rueda.up = this.binormales1[Math.floor(origen.t * this.segmentos1)];
-            this.rueda.lookAt(posicion1); 
-        })
-        .onComplete(() => {origen1.t=0.1;
-            var time1 = tiempoDeRecorrido1*0.5;
-            animacion1.duration(time1);
-            animacion1.start();
-        })
-        .repeat(Infinity)
-        .start();
-
-        function animate1() {
-            requestAnimationFrame(animate1);
-            TWEEN.update();
-        }
-        animate1();
-
-        this.add(this.rueda);
-
-      /*  window.addEventListener("keydown", (event) => this.onKeyDown(event));
-        window.addEventListener("keyup", (event) => this.onKeyUp(event)); */
-    /**************************************************/
-
-    this.nodo.add(this.coche);
-    this.add(this.circuito); 
-    this.add(this.nodo);
   }
 
-  createAxes() {
-    // Crear ejes con una longitud de 1 metro
-    this.axis = new THREE.AxesHelper(4);
-    this.add(this.axis);
-  }
-
-  initStats() {
-  
-    var stats = new Stats();
-    
-    stats.setMode(0); // 0: fps, 1: ms
-    
-    // Align top-left
-    stats.domElement.style.position = 'absolute';
-    stats.domElement.style.left = '0px';
-    stats.domElement.style.top = '0px';
-    
-    $("#Stats-output").append( stats.domElement );
-    
-    this.stats = stats;
-  }
-
-  createCamaraSubjetiva(nodo) {
-
-    this.camara = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 50);
-    nodo.add(this.camara);
-    this.camara.position.set(0, 0.5, -1.5);
-
-    var puntoDeMiraRelativo = new THREE.Vector3(0, 0.5, 0);
-
-    var target = new THREE.Vector3();
-    this.camara.getWorldDirection(target);
-
-    target.add(puntoDeMiraRelativo);
-
-    this.camara.lookAt(target);
-  }
-  
-  createCamera () {
-    // Para crear una cámara le indicamos
-    //   El ángulo del campo de visión en grados sexagesimales
-    //   La razón de aspecto ancho/alto
-    //   Los planos de recorte cercano y lejano
-    this.camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 50);
-    // Recuerda: Todas las unidades están en metros
-    // También se indica dónde se coloca
-    this.camera.position.set (4, 2, 4);
-    // Y hacia dónde mira
-    var look = new THREE.Vector3 (0,0,0);
-    this.camera.lookAt(look);
-    this.add (this.camera);
-    
-    // Para el control de cámara usamos una clase que ya tiene implementado los movimientos de órbita
-    this.cameraControl = new TrackballControls (this.camera, this.renderer.domElement);
-    // Se configuran las velocidades de los movimientos
-    this.cameraControl.rotateSpeed = 5;
-    this.cameraControl.zoomSpeed = -2;
-    this.cameraControl.panSpeed = 0.5;
-    // Debe orbitar con respecto al punto de mira de la cámara
-    this.cameraControl.target = look;
-  }
-  
-  createGround () {
-    // El suelo es un Mesh, necesita una geometría y un material.
-    
-    // La geometría es una caja con muy poca altura
-    var geometryGround = new THREE.BoxGeometry (20,0.2,20);
-    
-    // El material se hará con una textura de madera
-    var texture = new THREE.TextureLoader().load('../imgs/wood.jpg');
-    var materialGround = new THREE.MeshStandardMaterial ({map: texture});
-    
-    // Ya se puede construir el Mesh
-    var ground = new THREE.Mesh (geometryGround, materialGround);
-    
-    // Todas las figuras se crean centradas en el origen.
-    // El suelo lo bajamos la mitad de su altura para que el origen del mundo se quede en su lado superior
-    ground.position.y = -0.1;
-    
-    // Que no se nos olvide añadirlo a la escena, que en este caso es  this
-    this.add (ground);
-  }
-  
   createGUI () {
     // Se crea la interfaz gráfica de usuario
     var gui = new GUI();
@@ -372,15 +383,15 @@ class MyScene extends THREE.Scene {
   getCamera () {
     // En principio se devuelve la única cámara que tenemos
     // Si hubiera varias cámaras, este método decidiría qué cámara devuelve cada vez que es consultado
-    return this.camara;
+    return this.camaraActiva;
   }
   
   setCameraAspect (ratio) {
     // Cada vez que el usuario modifica el tamaño de la ventana desde el gestor de ventanas de
     // su sistema operativo hay que actualizar el ratio de aspecto de la cámara
-    this.camera.aspect = ratio;
+    this.camaraActiva.aspect = ratio;
     // Y si se cambia ese dato hay que actualizar la matriz de proyección de la cámara
-    this.camera.updateProjectionMatrix();
+    this.camaraActiva.updateProjectionMatrix();
   }
   
   onWindowResize () {
@@ -399,7 +410,9 @@ class MyScene extends THREE.Scene {
     // Se actualizan los elementos de la escena para cada frame
     
     // Se actualiza la posición de la cámara según su controlador
-    // this.cameraControl.update();
+    if(this.camaraActiva === this.camaraGeneral){
+      this.cameraControl.update();
+    }
     
     // Se actualiza el resto del modelo
     
@@ -421,6 +434,7 @@ $(function () {
 
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener ("resize", () => scene.onWindowResize());
+  window.addEventListener("keydown", (event) => scene.cambiarCamara(event));
   
   // Que no se nos olvide, la primera visualización.
   scene.update();
