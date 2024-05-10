@@ -7,7 +7,6 @@ class Coche extends THREE.Object3D{
         super();
 
         this.crearCoche(material, obj);
-        this.rotateX(-Math.PI/2);
         this.createGUI(gui, titleGui);
     }
 
@@ -22,11 +21,22 @@ class Coche extends THREE.Object3D{
                 objectLoader.load(obj,
                     (object) => {
                         object.scale.set(0.005,0.005,0.005);
+                        object.position.set(0, 0.25,0);
+                        object.rotateX(-Math.PI/2);
+                        this.cajaCoche = new THREE.Box3();
+                        this.cajaCoche.setFromObject(object);
+                        var caja = new THREE.Box3Helper(this.cajaCoche,0x000000);
+                        this.add(caja);
+                        caja.visible = true;
                         this.add(object);
                     }, null, null
                 );
             }
         );
+    }
+
+    getCaja(){
+        return this.cajaCoche;
     }
 
     createGUI(gui, titleGui){}
