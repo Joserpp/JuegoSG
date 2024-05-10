@@ -11,6 +11,11 @@ import * as TWEEN from '../libs/tween.esm.js'
 // Clases de mi proyecto
 import {Coche} from '../coche/Coche.js'
 import {Rueda} from '../rueda/Rueda.js'
+import {Bala} from '../bala/Bala.js'
+import {Bateria} from '../bateria/Bateria.js'
+import {Cañon} from '../cañon/cañon.js'
+import {Obstaculo} from '../obstaculo/obstaculo.js'
+
 
 /* import { CircuitoFinal } from './CircuitoFinal.js' */
 import { Circuito } from '../Circuito/Circuito.js'
@@ -49,68 +54,62 @@ class MyScene extends THREE.Scene {
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
     this.circuito = new Circuito(this.gui, "barrido");
     this.coche = new Coche(this.gui,"coche", '../coche/10600_RC_ Car_SG_v2_L3.mtl', '../coche/10600_RC_ Car_SG_v2_L3.obj');
+    this.coche.translateZ(0.23);
+    this.left = false;
+    this.right = false;
+
+    this.muro=new Obstaculo(this.gui,"muro");
+    this.muro.translateX(-4);
+    this.muro.scale.set(0.1,0.1,0.1);
+
+    this.bateria= new Bateria(this.gui, "bateria");
+    this.bateria.translateX(-4);
+    this.bateria.translateY(-0.5);
+    this.bateria.scale.set(0.1,0.1,0.1);
+
+    this.bala= new Bala(this.gui, "bala");
+
+    this.bala.translateX(-4);
+    this.bala.translateY(0.5);
+    this.bala.scale.set(0.1,0.1,0.1);
+
+
+
+
+
+    this.rueda = this.animacionRueda(this.gui,3000,0,0,0);
+    this.rueda2 = this.animacionRueda(this.gui,3000, 2 , 1, -2);
+    this.rueda3 = this.animacionRueda(this.gui,3000, 3 , 2, -3);
+    this.rueda4 = this.animacionRueda(this.gui,3000, 5 , 2, -4);
     
-    this.coche.translateZ(0.2);
     this.animacionCoche();
 
-    ////////////////////////////////////////////
-    //Animacion de la rueda
-    ///////////////////////////////////////////
-
-    /* this.rueda = new Rueda(this.gui, "Rueda");
-
-    this.rueda.scale.set(0.1,0.1,0.1);
-
-    this.spline2 = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(-1.5,1,0),
-        new THREE.Vector3(-1.2,1.5,0.5),
-        new THREE.Vector3(-1.2,1.0,0.5),
-        new THREE.Vector3(-1.5,1.5,0),
-        new THREE.Vector3(-1.5,1,0)]);
-
-        this.segmentos1 = 100;
-        this.binormales1 = this.spline2.computeFrenetFrames(this.segmentos1,true).binormals;
-        var origen1={t : 0};
-        var fin1={t : 1};
-        var tiempoDeRecorrido1 = 3000;
-
-    var animacion1 = new TWEEN.Tween(origen1).to(fin1, tiempoDeRecorrido1)
-    .onUpdate(() => {
-        var posicion1 = this.spline2.getPointAt(origen1.t);
-        this.rueda.position.copy(posicion1);
-        var tangent1 = this.spline2.getTangentAt(origen1.t);
-        posicion1.add(tangent1); 
-        this.rueda.up = this.binormales1[Math.floor(origen.t * this.segmentos1)];
-        this.rueda.lookAt(posicion1); 
-    })
-    .onComplete(() => {origen1.t=0.1;
-        var time1 = tiempoDeRecorrido1*0.5;
-        animacion1.duration(time1);
-        animacion1.start();
-    })
-    .repeat(Infinity)
-    .start();
-
-    function animate1() {
-        requestAnimationFrame(animate1);
-        TWEEN.update();
-    }
-    animate1();
-
-    this.add(this.rueda); */
-
-    /* window.addEventListener("keydown", (event) => this.onKeyDown(event));
-    window.addEventListener("keyup", (event) => this.onKeyUp(event)); */
-  
-    /* this.createCamaraSubjetiva(this.nodo); */
-
     this.createCameras();
-
+    
     this.nodo.add(this.coche);
+
+    var cajaCoche=new THREE.Box3();
+    cajaCoche.setFromObject(this.nodo);
+    var caja = new THREE.Box3Helper(cajaCoche,0x000000);
+    this.add(caja);
+    caja.visible=true;
+
+    this.choqueMuros(this.muro,cajaCoche);
+    this.choqueBaterias(this.bateria,cajaCoche);
+    this.choqueBalas(this.bala,cajaCoche);
+
+    this.add(this.bateria);
+    this.add(this.muro);
+    this.add(this.bala);
+    this.add(this.rueda);
+    this.add(this.rueda2);
+    this.add(this.rueda3);
+    this.add(this.rueda4);
     this.add(this.circuito); 
-    this.add(this.nodo);
+    this.add(this.nodo); 
 
     
+
   }
 
   createAxes() {
@@ -135,13 +134,58 @@ class MyScene extends THREE.Scene {
     this.stats = stats;
   }
 
+  choqueMuros(muro,cajaCoche){
+
+    var cajaMuro = new THREE.Box3();
+    cajaMuro.setFromObject(muro);
+    var caja1 = new THREE.Box3Helper(cajaMuro,0x000000);
+    this.add(caja1);
+    caja1.visible=true;
+    
+    if(cajaMuro.intersectsBox(cajaCoche)){
+
+        window.alert("choca muro");
+      
+    }
+  }
+
+  choqueBaterias(bateria,cajaCoche){
+
+    var cajaBateria = new THREE.Box3();
+    cajaBateria.setFromObject(bateria);
+    var caja1 = new THREE.Box3Helper(cajaBateria,0x000000);
+    this.add(caja1);
+    caja1.visible=true;
+    
+    if(cajaBateria.intersectsBox(cajaCoche)){
+
+        window.alert("choca bateria");
+      
+    }
+  }
+
+  choqueBalas(bala,cajaCoche){
+
+    var cajaBala = new THREE.Box3();
+    cajaBala.setFromObject(bala);
+    var caja1 = new THREE.Box3Helper(cajaBala,0x000000);
+    this.add(caja1);
+    caja1.visible=true;
+    
+    if(cajaBala.intersectsBox(cajaCoche)){
+
+        window.alert("choca bala");
+      
+    }
+  }
+
   createCamaraSubjetiva(/* nodo */) {
 
     this.camara = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 50);
     /* nodo.add(this.camara); */
-    this.camara.position.set(0, 0.5, -1.5);
+    this.camara.position.set(0 ,0.7, -1);
 
-    var puntoDeMiraRelativo = new THREE.Vector3(0, 0.5, 0);
+    var puntoDeMiraRelativo = new THREE.Vector3(0, 0, 0.5);
 
     var target = new THREE.Vector3();
     this.camara.getWorldPosition(target);
@@ -256,7 +300,7 @@ class MyScene extends THREE.Scene {
     this.binormales = this.spline.computeFrenetFrames(this.segmentos,true).binormals;
     var origen={t : 0};
     var fin={t : 1};
-    var tiempoDeRecorrido = 30000;
+    var tiempoDeRecorrido = 40000;
 
     var animacion = new TWEEN.Tween(origen).to(fin, tiempoDeRecorrido)
         .onUpdate(() => {
@@ -268,7 +312,7 @@ class MyScene extends THREE.Scene {
             this.nodo.lookAt(posicion); 
         })
         .onComplete(() => {origen.t=0.1;
-            var time = tiempoDeRecorrido*0.5;
+            var time = tiempoDeRecorrido*0.9;
             animacion.duration(time);
             animacion.start();
         })
@@ -280,6 +324,88 @@ class MyScene extends THREE.Scene {
             TWEEN.update();
         }
         animate();
+  }
+
+  giroCoche(event){
+    
+    if(event.which === 37 && event.which != 39){
+      if(this.right === true){
+        this.right = false;
+      }
+      else if(this.right === false){
+        this.right = true;
+      }
+    }
+    else if(event.which === 39 && event.which != 37){
+      if(this.left === true){
+        this.left = false;
+      }
+      else if(this.left === false){
+        this.left = true;
+      }
+    }
+  }
+
+  
+  updateMovimientoCoche(){
+    if(this.left){
+      this.moverIzquierda();
+    }
+    if(this.right){
+      this.moverDerecha();
+    }
+  }
+
+  moverIzquierda(){
+    this.coche.position.x -= 0.001;
+  }
+  
+  moverDerecha(){
+    this.coche.position.x += 0.001;
+  }
+
+  animacionRueda(gui, tiempoDeRecorrido1, x, y, z){
+
+    var rueda = new Rueda(gui, "Rueda");
+
+    rueda.scale.set(0.1,0.1,0.1);
+
+    var spline = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-1.5 + x,1 + y,0 + z),
+      new THREE.Vector3(-1.2 + x,1.5 + y,0.5 + z),
+      new THREE.Vector3(-1.2 + x ,1.0 + y,0.5 + z),
+      new THREE.Vector3(-1.5 + x,1.5 + y,0 + z),
+      new THREE.Vector3(-1.5 + x,1 + y,0 + z)
+    ]);
+
+    var segmentos1 = 100;
+    var binormales1 = spline.computeFrenetFrames(segmentos1,true).binormals;
+    var origen1={t : 0};
+    var fin1={t : 1};
+
+    var animacion1 = new TWEEN.Tween(origen1).to(fin1, tiempoDeRecorrido1)
+    .onUpdate(() => {
+        var posicion1 = spline.getPointAt(origen1.t);
+        rueda.position.copy(posicion1);
+        var tangent1 = spline.getTangentAt(origen1.t);
+        posicion1.add(tangent1); 
+        rueda.up = binormales1[Math.floor(origen1.t * segmentos1)];
+        rueda.lookAt(posicion1); 
+    })
+    .onComplete(() => {origen1.t=0.1;
+        animacion1.start();
+    })
+    .repeat(Infinity)
+    .start();
+
+    function animate1() {
+        requestAnimationFrame(animate1);
+        TWEEN.update();
+    }
+    animate1();
+
+    return rueda;
+
   }
 
   createGUI () {
@@ -414,6 +540,8 @@ class MyScene extends THREE.Scene {
       this.cameraControl.update();
     }
     
+    this.updateMovimientoCoche();
+    
     // Se actualiza el resto del modelo
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
@@ -435,6 +563,8 @@ $(function () {
   // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
   window.addEventListener ("resize", () => scene.onWindowResize());
   window.addEventListener("keydown", (event) => scene.cambiarCamara(event));
+  window.addEventListener("keydown", (event) => scene.giroCoche(event));
+  window.addEventListener("keyup", (event) => scene.giroCoche(event));
   
   // Que no se nos olvide, la primera visualización.
   scene.update();

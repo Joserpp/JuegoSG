@@ -1,7 +1,7 @@
 import * as THREE from '../libs/three.module.js'
 import { CSG } from '../libs/CSG-v2.js';
 
-class MyBox extends THREE.Object3D {
+class Cañon extends THREE.Object3D {
     constructor(gui,titleGui) {
         super();
         // Se crea la parte de la interfaz que corresponde a la caja
@@ -69,4 +69,4 @@ class MyBox extends THREE.Object3D {
     
 }
 
-export { MyBox };
+export { Cañon};
