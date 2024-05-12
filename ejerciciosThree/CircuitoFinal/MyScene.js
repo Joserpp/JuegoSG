@@ -29,73 +29,88 @@ class MyScene extends THREE.Scene {
   constructor (myCanvas) {
     super();
     
-    // Lo primero, crear el visualizador, pasándole el lienzo sobre el que realizar los renderizados.
     this.renderer = this.createRenderer(myCanvas);
     
-    // Se crea la interfaz gráfica de usuario
     this.gui = this.createGUI ();
 
     this.initStats();
     
-    // Construimos los distinos elementos que tendremos en la escena
-    
-    // Todo elemento que se desee sea tenido en cuenta en el renderizado de la escena debe pertenecer a esta. Bien como hijo de la escena (this en esta clase) o como hijo de un elemento que ya esté en la escena.
-    // Tras crear cada elemento se añadirá a la escena con   this.add(variable)
     this.createLights ();
+
+    this.left = false;
+    this.right = false;
     
-    // Tendremos una cámara con un control de movimiento con el ratón
-    /* this.createCamera (); */
-
-    //ejes
-    this.createAxes();
-
-    // Por último creamos el modelo.
-    // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
-    // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
+    
     this.circuito = new Circuito();
     this.splineCoche = this.circuito.getPathFromTorusKnot();
     
     this.coche = new Coche(this.gui,"coche", '../coche/10600_RC_ Car_SG_v2_L3.mtl', '../coche/10600_RC_ Car_SG_v2_L3.obj');
-    this.left = false;
-    this.right = false;
+    
+    this.muro = new Obstaculo(this.gui,"muro",0,0.3,0);
+    this.muro1 = new Obstaculo(this.gui,"muro1",0,-0.3,0);
+    this.muro2 = new Obstaculo(this.gui,"muro2",0.3,0,0);
 
-    this.muro = new Obstaculo(this.gui,"muro");
+    this.bateria= new Bateria(this.gui, "bateria",-0.3,0,0,0,0,Math.PI/2);
+    this.bateria1= new Bateria(this.gui, "bateria1",0,0.3,0,0,0,0);
+    this.bateria2= new Bateria(this.gui, "bateria2",0,0.3,0,0,0,0);
 
-    this.bateria= new Bateria(this.gui, "bateria");
-    this.bateria.translateX(-4);
-    this.bateria.translateY(-0.5);
-    this.bateria.scale.set(0.1,0.1,0.1);
+    this.bala = new Bala(this.gui, "bala",0,0.25,0,0,0,0);
+    this.bala1 = new Bala(this.gui, "bala1",0,0.25,0,0,0,0);
+    this.bala2 = new Bala(this.gui, "bala2",0,0.25,0,0,0,0);
 
-    this.bala = new Bala(this.gui, "bala");
-
-    this.bala.translateX(-4);
-    this.bala.translateY(0.5);
-    this.bala.scale.set(0.1,0.1,0.1);
-
-    this.rueda = this.animacionRueda(this.gui,3000,0,0,0);
-    this.rueda2 = this.animacionRueda(this.gui,3000, 2 , 1, -2);
-    this.rueda3 = this.animacionRueda(this.gui,3000, 3 , 2, -3);
-    this.rueda4 = this.animacionRueda(this.gui,3000, 5 , 2, -4);
+    this.pickableObjects = [];
+    this.rueda = this.animacionRueda(this.gui,5000,0,0,0);
+    this.rueda2 = this.animacionRueda(this.gui,5000, 2 , 1, 0);
+    this.rueda3 = this.animacionRueda(this.gui,5000, 3 , 2, 0);
+    this.rueda4 = this.animacionRueda(this.gui,5000, 2 , 0, 0);
     
     this.animacionCoche();
 
     this.createCameras();
-    
+
     this.nodo.add(this.coche);
     
-    this.colocarEnCircuito(this.muro);
+    this.colocarEnCircuito(this.muro, 0.5);
+    this.colocarEnCircuito(this.muro1, 0.8);
+    this.colocarEnCircuito(this.muro2, 0.2);
+
+    this.colocarEnCircuito(this.bateria, 0.1);
+    this.colocarEnCircuito(this.bateria1, 0.4);
+    this.colocarEnCircuito(this.bateria2, 0.7);
+
+    this.colocarEnCircuito(this.bala, 0.3);
+    this.colocarEnCircuito(this.bala1, 0.6);
+    this.colocarEnCircuito(this.bala2, 0.9);
+
     this.cajaMuro = this.crearCaja(this.muro);
+    this.cajaMuro1 = this.crearCaja(this.muro1);
+    this.cajaMuro2 = this.crearCaja(this.muro2);
+
     this.cajaBateria = this.crearCaja(this.bateria);
+    this.cajaBateria1 = this.crearCaja(this.bateria1);
+    this.cajaBateria2 = this.crearCaja(this.bateria2);
+
     this.cajaBala = this.crearCaja(this.bala);
-    this.cajaCoche = this.coche.getCaja();
+    this.cajaBala1 = this.crearCaja(this.bala1);
+    this.cajaBala2 = this.crearCaja(this.bala2);
 
     this.add(this.bateria);
+    this.add(this.bateria1);
+    this.add(this.bateria2);
+
     this.add(this.muro);
+    this.add(this.muro1);
+    this.add(this.muro2);
+    
     this.add(this.bala);
+    this.add(this.bala1);
+    this.add(this.bala2);
+    
     this.add(this.rueda);
     this.add(this.rueda2);
     this.add(this.rueda3);
     this.add(this.rueda4);
+    
     this.add(this.circuito); 
     this.add(this.nodo); 
 
@@ -127,28 +142,45 @@ class MyScene extends THREE.Scene {
 
     var caja = new THREE.Box3();
     caja.setFromObject(objeto);
-    var caja1 = new THREE.Box3Helper(caja,0x000000);
-    this.add(caja1);
-    caja1.visible = true;
 
     return caja;
+  }
+
+  onDocumentMouseDown(event){
+
+    var mouse = new THREE.Vector2();
+    var raycaster = new THREE.Raycaster();
+
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = 1 - 2 * (event.clientY / window.innerHeight);
+
+    raycaster.setFromCamera(mouse, this.getCamera());
+
+    var pickedObjects = raycaster.intersectObjects(this.pickableObjects, true);
+
+    if(pickedObjects.length > 0){
+
+      console.log('Le he dao con picking');
+    }
+    else{
+      console.log('No le he dao con picking');
+    }
   }
 
   choqueMuros(cajaMuro,cajaCoche){
     
     if(cajaMuro.intersectsBox(cajaCoche)){
 
-        window.alert("choca muro");
+        console.log("choca muro");
       
     }
   }
-
 
   choqueBaterias(cajaBateria,cajaCoche){
     
     if(cajaBateria.intersectsBox(cajaCoche)){
 
-        window.alert("choca bateria");
+      console.log("choca bateria");
       
     }
   }
@@ -157,11 +189,10 @@ class MyScene extends THREE.Scene {
 
     if(cajaBala.intersectsBox(cajaCoche)){
 
-        window.alert("choca bala");
+      console.log("choca bala");
       
     }
   }
-
 
   createCamaraSubjetiva() {
     
@@ -178,8 +209,7 @@ class MyScene extends THREE.Scene {
     camara.lookAt(target);
 
     return camara;
-}
-
+  }
 
   createCameraGeneral () {
     // Para crear una cámara le indicamos
@@ -231,9 +261,8 @@ class MyScene extends THREE.Scene {
     }
   }
 
-  colocarEnCircuito(objeto){
+  colocarEnCircuito(objeto , t){
     
-    var t = 0.5;
     var posTmp = this.path.getPointAt(t);
     objeto.position.copy(posTmp);
 
@@ -242,7 +271,6 @@ class MyScene extends THREE.Scene {
     var segmentoActual = Math.floor(t*this.segmentos);
     objeto.up = this.tubo.binormals[segmentoActual];
     objeto.lookAt(posTmp);
-
 
   }
 
@@ -332,6 +360,8 @@ class MyScene extends THREE.Scene {
   animacionRueda(gui, tiempoDeRecorrido1, x, y, z){
 
     var rueda = new Rueda(gui, "Rueda");
+
+    this.pickableObjects.push(rueda);
 
     rueda.scale.set(0.1,0.1,0.1);
 
@@ -507,12 +537,6 @@ class MyScene extends THREE.Scene {
     
     this.updateMovimientoCoche();
 
-    if(this.cajaMuro.intersectsBox(this.cajaCoche)){
-
-      window.alert("choca muro");
-    
-    }
-    
     // Se actualiza el resto del modelo
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
@@ -522,6 +546,21 @@ class MyScene extends THREE.Scene {
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
     // Si no existiera esta línea,  update()  se ejecutaría solo la primera vez.
     requestAnimationFrame(() => this.update())
+
+    this.coche.actualizarCaja();
+
+    this.choqueMuros( this.cajaMuro,this.coche.getCaja());
+    this.choqueMuros( this.cajaMuro1,this.coche.getCaja());
+    this.choqueMuros( this.cajaMuro2,this.coche.getCaja());
+
+    this.choqueBalas( this.cajaBala,this.coche.getCaja());
+    this.choqueBalas( this.cajaBala1,this.coche.getCaja());
+    this.choqueBalas( this.cajaBala2,this.coche.getCaja());
+
+    this.choqueBaterias( this.cajaBateria,this.coche.getCaja());
+    this.choqueBaterias( this.cajaBateria1,this.coche.getCaja());
+    this.choqueBaterias( this.cajaBateria2,this.coche.getCaja());
+
   }
 }
 
@@ -536,7 +575,7 @@ $(function () {
   window.addEventListener("keydown", (event) => scene.cambiarCamara(event));
   window.addEventListener("keydown", (event) => scene.giroCocheDown(event));
   window.addEventListener("keyup", (event) => scene.giroCocheUp(event));
-  
+  window.addEventListener("mousedown", (event) => scene.onDocumentMouseDown(event));
   // Que no se nos olvide, la primera visualización.
   scene.update();
 });

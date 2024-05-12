@@ -1,7 +1,7 @@
 import * as THREE from '../libs/three.module.js'
 
 class Bala extends THREE.Object3D{
-    constructor(gui, titleGui){
+    constructor(gui, titleGui,x,y,z,rotacionX,rotacionY,rotacionZ){
         super();
 
         var material = new THREE.MeshNormalMaterial();
@@ -50,6 +50,13 @@ class Bala extends THREE.Object3D{
         const geometry = new THREE.LatheGeometry(this.perfil, segments, 0, 2*Math.PI);
         geometry.scale(0.5, 0.5, 0.5);
         const figure = new THREE.Mesh(geometry, material);
+
+        figure.scale.set(0.1,0.1,0.1);
+        figure.position.set(x,y,z);
+
+        figure.rotateX(rotacionX);
+        figure.rotateY(rotacionY);
+        figure.rotateZ(rotacionZ);
 
         this.add(figure);
 

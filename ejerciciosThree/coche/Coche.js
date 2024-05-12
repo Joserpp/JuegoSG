@@ -23,16 +23,19 @@ class Coche extends THREE.Object3D{
                         object.scale.set(0.005,0.005,0.005);
                         object.position.set(0, 0.25,0);
                         object.rotateX(-Math.PI/2);
-                        this.cajaCoche = new THREE.Box3();
-                        this.cajaCoche.setFromObject(object);
-                        var caja = new THREE.Box3Helper(this.cajaCoche,0x000000);
-                        this.add(caja);
-                        caja.visible = true;
-                        this.add(object);
+                        this.add(object); 
                     }, null, null
                 );
             }
         );
+        this.cajaCoche = new THREE.Box3();
+        this.actualizarCaja();
+    }
+
+    actualizarCaja(){
+
+        this.cajaCoche.setFromObject(this);
+
     }
 
     getCaja(){
