@@ -59,16 +59,16 @@ class MyScene extends THREE.Scene {
     this.bala2 = new Bala(this.gui, "bala2",0,0.25,0,0,0,0);
 
     this.pickableObjects = [];
-    this.rueda = this.animacionRueda(this.gui,5000,0,0,0);
-    this.rueda2 = this.animacionRueda(this.gui,5000, 2 , 1, 0);
-    this.rueda3 = this.animacionRueda(this.gui,5000, 3 , 2, 0);
-    this.rueda4 = this.animacionRueda(this.gui,5000, 2 , 0, 0);
+    this.rueda = this.animacionRueda(this.gui,5000,0,0,-1.4);
+    this.rueda2 = this.animacionRueda(this.gui,5000, 2 ,0 , 0);
+    this.rueda3 = this.animacionRueda(this.gui,5000, 0 , 2, -0.3);
+    this.rueda4 = this.animacionRueda(this.gui,5000, 2 , -2.6, 0.2);
     
     this.animacionCoche();
 
     this.createCameras();
 
-    this.nodo.add(this.coche);
+    this.nodo.add(this.coche);    
     
     this.colocarEnCircuito(this.muro, 0.5);
     this.colocarEnCircuito(this.muro1, 0.8);
@@ -298,8 +298,9 @@ class MyScene extends THREE.Scene {
     this.binormales = this.splineCoche.computeFrenetFrames(this.segmentos,true).binormals;
     var origen={t : 0};
     var fin={t : 1};
-    var tiempoDeRecorrido = 40000;
-
+    
+    var tiempoDeRecorrido =40000;
+    
     var animacion = new TWEEN.Tween(origen).to(fin, tiempoDeRecorrido)
         .onUpdate(() => {
             var posicion = this.splineCoche.getPointAt(origen.t);
@@ -309,19 +310,20 @@ class MyScene extends THREE.Scene {
             this.nodo.up = this.binormales[Math.floor(origen.t * this.segmentos)];
             this.nodo.lookAt(posicion); 
         })
-        .onComplete(() => {origen.t=0.1;
-            var time = tiempoDeRecorrido*0.9;
-            animacion.duration(time);
-            animacion.start();
+        .onComplete(() => {
+            tiempoDeRecorrido*0.5;
+            animacion.stop();
+            origen.t = 0; 
+            animacion.to(fin, tiempoDeRecorrido).start();
         })
         .repeat(Infinity)
-        .start();
+        .start(); 
 
         function animate() {
             requestAnimationFrame(animate);
             TWEEN.update();
         }
-        animate();
+        animate();        
   }
 
   giroCocheDown(event){
@@ -560,7 +562,6 @@ class MyScene extends THREE.Scene {
     this.choqueBaterias( this.cajaBateria,this.coche.getCaja());
     this.choqueBaterias( this.cajaBateria1,this.coche.getCaja());
     this.choqueBaterias( this.cajaBateria2,this.coche.getCaja());
-
   }
 }
 
