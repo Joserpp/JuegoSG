@@ -1,12 +1,20 @@
 import * as THREE from '../libs/three.module.js'
+import { CSG } from '../libs/CSG-v2.js'
 
 class Bala extends THREE.Object3D{
     constructor(gui, titleGui,x,y,z,rotacionX,rotacionY,rotacionZ){
         super();
 
-        var material = new THREE.MeshNormalMaterial();
+        /* var material = new THREE.MeshNormalMaterial();
         material.flatShading = true;
-        material.needsUpdate = true;
+        material.needsUpdate = true; */
+
+        var material = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+            metalness: 1,
+            roughness: 0.5,
+            envMapIntensity: 1,
+        });
 
         this.perfil = [
             new THREE.Vector2(0.0, 0.0),
@@ -26,31 +34,12 @@ class Bala extends THREE.Object3D{
             new THREE.Vector2(0, 2),
         ];
 
-        /* this.perfil = [
-            new THREE.Vector2(0.0, 0.0),
-            new THREE.Vector2(0.16, 0.0),
-            new THREE.Vector2(0.16, 0.03),
-            new THREE.Vector2(0.14, 0.05),
-            new THREE.Vector2(0.14, 0.07),
-            new THREE.Vector2(0.16, 0.1),
-            new THREE.Vector2(0.15, 0.64),
-            new THREE.Vector2(0.15, 0.7),
-            new THREE.Vector2(0.14, 0.77),
-            new THREE.Vector2(0.14, 0.79),
-            new THREE.Vector2(0.12, 0.86),
-            new THREE.Vector2(0.09, 0.92),
-            new THREE.Vector2(0.07, 0.94),
-            new THREE.Vector2(0.04, 0.97),
-            new THREE.Vector2(0.02, 0.98),
-            new THREE.Vector2(0, 0.98),
-        ]; */
+        var segments = 50;
 
-        const segments = 50;
-
-        const geometry = new THREE.LatheGeometry(this.perfil, segments, 0, 2*Math.PI);
+        var geometry = new THREE.LatheGeometry(this.perfil, segments, 0, 2*Math.PI);
         geometry.scale(0.5, 0.5, 0.5);
-        const figure = new THREE.Mesh(geometry, material);
 
+        var figure = new THREE.Mesh(geometry, material);
         figure.scale.set(0.1,0.1,0.1);
         figure.position.set(x,y,z);
 
@@ -58,9 +47,24 @@ class Bala extends THREE.Object3D{
         figure.rotateY(rotacionY);
         figure.rotateZ(rotacionZ);
 
-        this.add(figure);
+        
+        var figure2 = new THREE.Mesh(geometry, material);
+        figure2.scale.set(0.1,0.1,0.1);
+        figure2.position.set(x,y,z);
 
-        /* figure.position.y = 0.5; */
+        figure2.rotateX(rotacionX);
+        figure2.rotateY(rotacionY);
+        figure2.rotateZ(rotacionZ);
+        figure2.translateX(0.015);
+        
+        this.add(figure);
+        /* this.add(figure2); */
+        
+        /* var csg = new CSG();
+        csg.union([figure, figure2]);
+        var result = csg.toMesh();
+        
+        this.add(result); */
 
         this.createGUI(gui, titleGui);
     }

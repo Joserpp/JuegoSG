@@ -7,16 +7,18 @@ class Obstaculo extends THREE.Object3D {
         // Se crea primero porque otros métodos usan las variables que se definen para la interfaz
         this.crearObstaculo(x,y,z);  
     }
+
     crearObstaculo(x,y,z) {
 
         var muro = new THREE.BoxGeometry(1.5,1.5,0.25);
         var texture = new THREE.TextureLoader().load('../imgs/ladrillo-difuso.png');
-        var materialmuro = new THREE.MeshStandardMaterial ({map: texture});        
-        var muromesh= new THREE.Mesh(muro,materialmuro);
+
+        var materialmuro = new THREE.MeshBasicMaterial({map: texture});
+        var muromesh = new THREE.Mesh(muro, materialmuro);
+
         muromesh.scale.set(0.1,0.1,0.1);
         muromesh.position.set(x,y,z);
         this.add(muromesh);
-
     }
 
 }

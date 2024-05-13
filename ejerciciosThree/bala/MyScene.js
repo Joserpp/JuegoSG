@@ -49,7 +49,7 @@ class MyScene extends THREE.Scene {
     // Por último creamos el modelo.
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
-    this.model = new Bala(this.gui, "Rueda");
+    this.model = new Bala(this.gui, "Bala", 0, 0, 0, 0, 0, 0);
     this.add (this.model);
   }
   

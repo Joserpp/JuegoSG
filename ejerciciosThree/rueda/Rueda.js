@@ -33,7 +33,7 @@ class Rueda extends THREE.Object3D{
 
         const llanta = new THREE.CylinderGeometry(0.85, 0.85, 0.7);
         var texture = new THREE.TextureLoader().load('../imgs/llanta.png');
-        var materialLlanta = new THREE.MeshStandardMaterial ({map: texture});
+        var materialLlanta = new THREE.MeshBasicMaterial ({map: texture});
         this.llantaMesh = new THREE.Mesh(llanta, materialLlanta);
         this.llantaMesh.rotateX(Math.PI/2);
         this.add(this.llantaMesh);

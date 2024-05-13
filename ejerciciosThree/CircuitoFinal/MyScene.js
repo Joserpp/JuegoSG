@@ -37,33 +37,44 @@ class MyScene extends THREE.Scene {
     
     this.createLights ();
 
+    // Variables para el giro del coche
     this.left = false;
     this.right = false;
+
+    // Variables para el picking
+    this.mouse = new THREE.Vector2();
+    this.raycaster = new THREE.Raycaster();
     
-    
+    /***************************/
+    /* Creación de los objetos */
+    /***************************/
     this.circuito = new Circuito();
-    this.splineCoche = this.circuito.getPathFromTorusKnot();
+    this.splineCoche = this.circuito.getPathFromTorusKnot(); // Obtenemos el spline, para el coche, de nuestro circuito
     
-    this.coche = new Coche(this.gui,"coche", '../coche/10600_RC_ Car_SG_v2_L3.mtl', '../coche/10600_RC_ Car_SG_v2_L3.obj');
+    this.coche = new Coche(this.gui, "coche", '../coche/10600_RC_ Car_SG_v2_L3.mtl', '../coche/10600_RC_ Car_SG_v2_L3.obj');
     
-    this.muro = new Obstaculo(this.gui,"muro",0,0.3,0);
-    this.muro1 = new Obstaculo(this.gui,"muro1",0,-0.3,0);
-    this.muro2 = new Obstaculo(this.gui,"muro2",0.3,0,0);
+    this.muro  = new Obstaculo(this.gui, "muro", 0, 0.3, 0);
+    this.muro1 = new Obstaculo(this.gui, "muro1", 0, -0.3, 0);
+    this.muro2 = new Obstaculo(this.gui, "muro2", 0.3, 0, 0);
 
-    this.bateria= new Bateria(this.gui, "bateria",-0.3,0,0,0,0,Math.PI/2);
-    this.bateria1= new Bateria(this.gui, "bateria1",0,0.3,0,0,0,0);
-    this.bateria2= new Bateria(this.gui, "bateria2",0,0.3,0,0,0,0);
+    this.bateria  = new Bateria(this.gui, "bateria", -0.3, 0, 0, 0, 0, Math.PI/2);
+    this.bateria1 = new Bateria(this.gui, "bateria1", 0, 0.3, 0, 0, 0, 0);
+    this.bateria2 = new Bateria(this.gui, "bateria2", 0, 0.3, 0, 0, 0, 0);
 
-    this.bala = new Bala(this.gui, "bala",0,0.25,0,0,0,0);
-    this.bala1 = new Bala(this.gui, "bala1",0,0.25,0,0,0,0);
-    this.bala2 = new Bala(this.gui, "bala2",0,0.25,0,0,0,0);
+    this.bala  = new Bala(this.gui, "bala", 0, 0.25, 0, 0, 0, 0);
+    this.bala1 = new Bala(this.gui, "bala1", 0, 0.25, 0, 0, 0, 0);
+    this.bala2 = new Bala(this.gui, "bala2", 0, 0.25, 0 ,0, 0, 0);
+    
+    /********************************************/
+    /* Colocacion de los objetos en el circuito */
+    /********************************************/
 
     this.pickableObjects = [];
-    this.rueda = this.animacionRueda(this.gui,5000,0,0,-1.4);
-    this.rueda2 = this.animacionRueda(this.gui,5000, 2 ,0 , 0);
-    this.rueda3 = this.animacionRueda(this.gui,5000, 0 , 2, -0.3);
-    this.rueda4 = this.animacionRueda(this.gui,5000, 2 , -2.6, 0.2);
-    
+    this.rueda  = this.animacionRueda(this.gui, 5000, 0, 0, -1.4);
+    this.rueda2 = this.animacionRueda(this.gui, 5000, 2, 0, 0);
+    this.rueda3 = this.animacionRueda(this.gui, 5000, 0, 2, -0.3);
+    this.rueda4 = this.animacionRueda(this.gui, 5000, 2, -2.6, 0.2);
+
     this.animacionCoche();
 
     this.createCameras();
@@ -82,18 +93,26 @@ class MyScene extends THREE.Scene {
     this.colocarEnCircuito(this.bala1, 0.6);
     this.colocarEnCircuito(this.bala2, 0.9);
 
-    this.cajaMuro = this.crearCaja(this.muro);
+    /*********************************************/
+    /* Creación de las cajas para las colisiones */
+    /*********************************************/
+
+    this.cajaMuro  = this.crearCaja(this.muro);
     this.cajaMuro1 = this.crearCaja(this.muro1);
     this.cajaMuro2 = this.crearCaja(this.muro2);
 
-    this.cajaBateria = this.crearCaja(this.bateria);
+    this.cajaBateria  = this.crearCaja(this.bateria);
     this.cajaBateria1 = this.crearCaja(this.bateria1);
     this.cajaBateria2 = this.crearCaja(this.bateria2);
 
-    this.cajaBala = this.crearCaja(this.bala);
+    this.cajaBala  = this.crearCaja(this.bala);
     this.cajaBala1 = this.crearCaja(this.bala1);
     this.cajaBala2 = this.crearCaja(this.bala2);
 
+    
+    /************************************/
+    /* Añadimos los objetos a la escena */
+    /************************************/
     this.add(this.bateria);
     this.add(this.bateria1);
     this.add(this.bateria2);
@@ -113,13 +132,6 @@ class MyScene extends THREE.Scene {
     
     this.add(this.circuito); 
     this.add(this.nodo); 
-
-  }
-
-  createAxes() {
-    // Crear ejes con una longitud de 1 metro
-    this.axis = new THREE.AxesHelper(4);
-    this.add(this.axis);
   }
 
   initStats() {
@@ -138,25 +150,18 @@ class MyScene extends THREE.Scene {
     this.stats = stats;
   }
 
-  crearCaja(objeto){
-
-    var caja = new THREE.Box3();
-    caja.setFromObject(objeto);
-
-    return caja;
-  }
+  /***********/
+  /* Picking */
+  /***********/
 
   onDocumentMouseDown(event){
 
-    var mouse = new THREE.Vector2();
-    var raycaster = new THREE.Raycaster();
+    this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = 1 - 2 * (event.clientY / window.innerHeight);
 
-    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-    mouse.y = 1 - 2 * (event.clientY / window.innerHeight);
+    this.raycaster.setFromCamera(this.mouse, this.getCamera());
 
-    raycaster.setFromCamera(mouse, this.getCamera());
-
-    var pickedObjects = raycaster.intersectObjects(this.pickableObjects, true);
+    var pickedObjects = this.raycaster.intersectObjects(this.pickableObjects, true);
 
     if(pickedObjects.length > 0){
 
@@ -165,6 +170,18 @@ class MyScene extends THREE.Scene {
     else{
       console.log('No le he dao con picking');
     }
+  }
+
+  /*************************/
+  /* Colisiones de objetos */
+  /*************************/
+
+  crearCaja(objeto){
+
+    var caja = new THREE.Box3();
+    caja.setFromObject(objeto);
+
+    return caja;
   }
 
   choqueMuros(cajaMuro,cajaCoche){
@@ -194,7 +211,11 @@ class MyScene extends THREE.Scene {
     }
   }
 
-  createCamaraSubjetiva() {
+  /******************************/
+  /* Funciones para las cámaras */
+  /******************************/
+
+  createCamaraSubjetiva(){
     
     const camara = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 50);
     
@@ -211,7 +232,7 @@ class MyScene extends THREE.Scene {
     return camara;
   }
 
-  createCameraGeneral () {
+  createCameraGeneral(){
     // Para crear una cámara le indicamos
     //   El ángulo del campo de visión en grados sexagesimales
     //   La razón de aspecto ancho/alto
@@ -260,6 +281,24 @@ class MyScene extends THREE.Scene {
       }
     }
   }
+
+  getCamera () {
+    // En principio se devuelve la única cámara que tenemos
+    // Si hubiera varias cámaras, este método decidiría qué cámara devuelve cada vez que es consultado
+    return this.camaraActiva;
+  }
+  
+  setCameraAspect (ratio) {
+    // Cada vez que el usuario modifica el tamaño de la ventana desde el gestor de ventanas de
+    // su sistema operativo hay que actualizar el ratio de aspecto de la cámara
+    this.camaraActiva.aspect = ratio;
+    // Y si se cambia ese dato hay que actualizar la matriz de proyección de la cámara
+    this.camaraActiva.updateProjectionMatrix();
+  }
+
+  /*************************************/
+  /* Colocación y animación de objetos */
+  /*************************************/
 
   colocarEnCircuito(objeto , t){
     
@@ -326,6 +365,55 @@ class MyScene extends THREE.Scene {
         animate();        
   }
 
+  animacionRueda(gui, tiempoDeRecorrido1, x, y, z){
+
+    var rueda = new Rueda(gui, "Rueda");
+
+    this.pickableObjects.push(rueda);
+
+    rueda.scale.set(0.1,0.1,0.1);
+
+    var spline = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-1.5 + x, 1 + y, 0 + z),
+      new THREE.Vector3(-1.2 + x, 1.5 + y, 0.5 + z),
+      new THREE.Vector3(-1.2 + x, 1.0 + y, 0.5 + z),
+      new THREE.Vector3(-1.5 + x, 1.5 + y, 0 + z),
+      new THREE.Vector3(-1.5 + x, 1 + y, 0 + z)
+    ]);
+
+    var segmentos1 = 100;
+    var binormales1 = spline.computeFrenetFrames(segmentos1,true).binormals;
+    var origen1={t : 0};
+    var fin1={t : 1};
+
+    var animacion1 = new TWEEN.Tween(origen1).to(fin1, tiempoDeRecorrido1)
+    .onUpdate(() => {
+        var posicion1 = spline.getPointAt(origen1.t);
+        rueda.position.copy(posicion1);
+        var tangent1 = spline.getTangentAt(origen1.t);
+        posicion1.add(tangent1); 
+        rueda.up = binormales1[Math.floor(origen1.t * segmentos1)];
+        rueda.lookAt(posicion1); 
+    })
+    .onComplete(() => {origen1.t=0.1;
+        animacion1.start();
+    })
+    .repeat(Infinity)
+    .start();
+
+    function animate1() {
+        requestAnimationFrame(animate1);
+        TWEEN.update();
+    }
+    animate1();
+
+    return rueda;
+  }
+
+  /*******************/
+  /* Giros del coche */
+  /*******************/
+
   giroCocheDown(event){
     if (event.which === 37) {
       this.left = true;
@@ -359,51 +447,7 @@ class MyScene extends THREE.Scene {
     this.coche.rotation.z += 0.008;
   }
 
-  animacionRueda(gui, tiempoDeRecorrido1, x, y, z){
-
-    var rueda = new Rueda(gui, "Rueda");
-
-    this.pickableObjects.push(rueda);
-
-    rueda.scale.set(0.1,0.1,0.1);
-
-    var spline = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(-1.5 + x,1 + y,0 + z),
-      new THREE.Vector3(-1.2 + x,1.5 + y,0.5 + z),
-      new THREE.Vector3(-1.2 + x ,1.0 + y,0.5 + z),
-      new THREE.Vector3(-1.5 + x,1.5 + y,0 + z),
-      new THREE.Vector3(-1.5 + x,1 + y,0 + z)
-    ]);
-
-    var segmentos1 = 100;
-    var binormales1 = spline.computeFrenetFrames(segmentos1,true).binormals;
-    var origen1={t : 0};
-    var fin1={t : 1};
-
-    var animacion1 = new TWEEN.Tween(origen1).to(fin1, tiempoDeRecorrido1)
-    .onUpdate(() => {
-        var posicion1 = spline.getPointAt(origen1.t);
-        rueda.position.copy(posicion1);
-        var tangent1 = spline.getTangentAt(origen1.t);
-        posicion1.add(tangent1); 
-        rueda.up = binormales1[Math.floor(origen1.t * segmentos1)];
-        rueda.lookAt(posicion1); 
-    })
-    .onComplete(() => {origen1.t=0.1;
-        animacion1.start();
-    })
-    .repeat(Infinity)
-    .start();
-
-    function animate1() {
-        requestAnimationFrame(animate1);
-        TWEEN.update();
-    }
-    animate1();
-
-    return rueda;
-
-  }
+  /******************/
 
   createGUI () {
     // Se crea la interfaz gráfica de usuario
@@ -414,7 +458,7 @@ class MyScene extends THREE.Scene {
     // En este caso la intensidad de la luz y si se muestran o no los ejes
     this.guiControls = {
       // En el contexto de una función   this   alude a la función
-      lightPower : 500.0,  // La potencia de esta fuente de luz se mide en lúmenes
+      lightPower : 100.0,  // La potencia de esta fuente de luz se mide en lúmenes
       ambientIntensity : 10,   
       axisOnOff : true
     }
@@ -481,10 +525,6 @@ class MyScene extends THREE.Scene {
     this.ambientLight.intensity = valor;
   }  
   
-  setAxisVisible (valor) {
-    this.axis.visible = valor;
-  }
-  
   createRenderer (myCanvas) {
     // Se recibe el lienzo sobre el que se van a hacer los renderizados. Un div definido en el html.
     
@@ -501,20 +541,6 @@ class MyScene extends THREE.Scene {
     $(myCanvas).append(renderer.domElement);
     
     return renderer;  
-  }
-  
-  getCamera () {
-    // En principio se devuelve la única cámara que tenemos
-    // Si hubiera varias cámaras, este método decidiría qué cámara devuelve cada vez que es consultado
-    return this.camaraActiva;
-  }
-  
-  setCameraAspect (ratio) {
-    // Cada vez que el usuario modifica el tamaño de la ventana desde el gestor de ventanas de
-    // su sistema operativo hay que actualizar el ratio de aspecto de la cámara
-    this.camaraActiva.aspect = ratio;
-    // Y si se cambia ese dato hay que actualizar la matriz de proyección de la cámara
-    this.camaraActiva.updateProjectionMatrix();
   }
   
   onWindowResize () {

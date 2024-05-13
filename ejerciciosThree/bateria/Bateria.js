@@ -6,7 +6,7 @@ class Bateria extends THREE.Object3D{
         super();
 
         var texture = new THREE.TextureLoader().load('../imgs/pila.png');
-        var materialPila = new THREE.MeshStandardMaterial ({map: texture, side: THREE.FrontSide});
+        var materialPila = new THREE.MeshBasicMaterial ({map: texture, side: THREE.FrontSide});
 
         var cilindro = new THREE.CylinderGeometry(0.5, 0.5, 1.5, 100);
         var cilindroMesh = new THREE.Mesh(cilindro, materialPila);
