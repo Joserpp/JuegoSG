@@ -44,7 +44,7 @@ class MyScene extends THREE.Scene {
     // Variables para el picking
     this.mouse = new THREE.Vector2();
     this.raycaster = new THREE.Raycaster();
-    
+
     /***************************/
     /* Creación de los objetos */
     /***************************/
@@ -52,6 +52,11 @@ class MyScene extends THREE.Scene {
     this.splineCoche = this.circuito.getPathFromTorusKnot(); // Obtenemos el spline, para el coche, de nuestro circuito
     
     this.coche = new Coche(this.gui, "coche", '../coche/10600_RC_ Car_SG_v2_L3.mtl', '../coche/10600_RC_ Car_SG_v2_L3.obj');
+    
+    // Varriables para la velocidad del coche
+    this.reloj = new THREE.Clock();
+    this.velocidad = 1/30;
+    this.t = 1;
     
     this.muro  = new Obstaculo(this.gui, "muro", 0, 0.3, 0);
     this.muro1 = new Obstaculo(this.gui, "muro1", 0, -0.3, 0);
@@ -79,7 +84,7 @@ class MyScene extends THREE.Scene {
 
     this.createCameras();
 
-    this.nodo.add(this.coche);    
+        
     
     this.colocarEnCircuito(this.muro, 0.5);
     this.colocarEnCircuito(this.muro1, 0.8);
@@ -150,6 +155,17 @@ class MyScene extends THREE.Scene {
     this.stats = stats;
   }
 
+
+
+  /***************************/
+  /* Actualizar la velocidad */
+  /***************************/
+
+  
+  setVelocidad(){
+    /* this.velocidad=this.velocidad*(1/0.9); */
+    this.velocidad *= 2;
+  }  
   /***********/
   /* Picking */
   /***********/
@@ -323,22 +339,39 @@ class MyScene extends THREE.Scene {
     
     this.nodo = new THREE.Object3D();
     
-    var t = 1;
-    var posTmp = this.path.getPointAt(t);
+    var posTmp = this.path.getPointAt(this.t);
     this.nodo.position.copy(posTmp);
 
-    var tangente = this.path.getTangentAt(t);
+    var tangente = this.path.getTangentAt(this.t);
     posTmp.add(tangente);
-    var segmentoActual = Math.floor(t*this.segmentos);
+    var segmentoActual = Math.floor(this.t*this.segmentos);
     this.nodo.up = this.tubo.binormals[segmentoActual];
     this.nodo.lookAt(posTmp);
 
     this.segmentos = 100;
     this.binormales = this.splineCoche.computeFrenetFrames(this.segmentos,true).binormals;
-    var origen={t : 0};
-    var fin={t : 1};
     
-    var tiempoDeRecorrido =40000;
+    
+
+    var segundosTrancurridos = this.reloj.getDelta();
+    
+    if(this.t === 0){
+      console.log('aumento velocidad');
+      this.setVelocidad();
+    }
+    
+    this.t += this.velocidad * segundosTrancurridos;
+
+    if(this.t > 1){
+      this.t = 0;
+    }
+
+    this.nodo.add(this.coche);
+
+   /*  var origen = {t : 0};
+    var fin = {t : 1};
+    
+    var tiempoDeRecorrido = 40000;
     
     var animacion = new TWEEN.Tween(origen).to(fin, tiempoDeRecorrido)
         .onUpdate(() => {
@@ -362,9 +395,9 @@ class MyScene extends THREE.Scene {
             requestAnimationFrame(animate);
             TWEEN.update();
         }
-        animate();        
+        animate();   */     
   }
-
+  
   animacionRueda(gui, tiempoDeRecorrido1, x, y, z){
 
     var rueda = new Rueda(gui, "Rueda");
@@ -574,7 +607,7 @@ class MyScene extends THREE.Scene {
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
     // Si no existiera esta línea,  update()  se ejecutaría solo la primera vez.
     requestAnimationFrame(() => this.update())
-
+    this.animacionCoche();
     this.coche.actualizarCaja();
 
     this.choqueMuros( this.cajaMuro,this.coche.getCaja());

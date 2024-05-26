@@ -8,7 +8,10 @@ class Coche extends THREE.Object3D{
 
         this.crearCoche(material, obj);
         this.createGUI(gui, titleGui);
+
+
     }
+
 
     crearCoche( material, obj){
         
@@ -43,7 +46,11 @@ class Coche extends THREE.Object3D{
     }
 
     createGUI(gui, titleGui){}
-    update () {}
+    update () {
+
+
+
+    }
 }
 
 export{ Coche };
