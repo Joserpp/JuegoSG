@@ -4,10 +4,23 @@ import { CSG } from '../libs/CSG-v2.js';
 class Cañon extends THREE.Object3D {
     constructor(gui,titleGui) {
         super();
-        // Se crea la parte de la interfaz que corresponde a la caja
-        // Se crea primero porque otros métodos usan las variables que se definen para la interfaz
-        this.crearCañon();  
 
+        this.gui = gui;
+        this.titleGui = titleGui;
+        
+        this.pivoteCañon = new THREE.Object3D();
+        this.pivoteGeneral = new THREE.Object3D();
+
+        this.pivoteGeneral.rotateY(-Math.PI/2);
+        this.pivoteGeneral.scale.set(0.03,0.03,0.03);
+        this.pivoteGeneral.position.set(0, 0.32, 0);
+
+        this.add(this.pivoteGeneral);
+        this.pivoteGeneral.add(this.pivoteCañon);
+
+        this.crearCañon();
+
+        this.createGUI();
     }
 
     
@@ -23,7 +36,7 @@ class Cañon extends THREE.Object3D {
         });
         
                 
-        //base del cañon
+        //base del cuerpo del cañon
         var esfera= new THREE.SphereGeometry(0.5,32,32);
         var geoesfera= new THREE.Mesh(esfera,material);
         geoesfera.translateY(1);
@@ -36,6 +49,9 @@ class Cañon extends THREE.Object3D {
         geocilindro.translateY(1);
         geocilindro.rotateZ(Math.PI/2);
 
+        var cuerpo = new CSG();
+        cuerpo.union([geocilindro, geoesfera]);
+
         //hueco interior
         var cilindro1= new THREE.CylinderGeometry(0.3,0.3,2);
         var geocilindro1= new THREE.Mesh(cilindro1,material);
@@ -43,33 +59,51 @@ class Cañon extends THREE.Object3D {
         geocilindro1.translateY(1);
         geocilindro1.rotateZ(Math.PI/2);
 
+        cuerpo.subtract([geocilindro1]);
+
         //base del cañon
         var base= new THREE.BoxGeometry(1,1,1);
         var geobase=new THREE.Mesh(base,material);
         geobase.translateY(0.5);
+        this.pivoteGeneral.add(geobase);
 
         //mecha cañon
         var cilindro2= new THREE.CylinderGeometry(0.05,0.05,0.3);
         cilindro2.rotateZ(0.5);
         cilindro2.translate(-0.4,1.5,0);
         var geocilindro2=new THREE.Mesh(cilindro2,material);
+        cuerpo.union([geocilindro2]);
 
-        var csg=new CSG();
-
-        csg.union([geocilindro,geoesfera]);
-        csg.union([geobase]);
-        csg.subtract([geocilindro1]);
-        csg.union([geocilindro2]);
-
-
-        var resultado=csg.toMesh();
-        resultado.rotateY(-Math.PI/2);
-        resultado.scale.set(0.03,0.03,0.03);
-        resultado.position.set(0, 0.3, 0);
-
-        this.add(resultado);
+        this.pivoteCañon.add(cuerpo.toMesh());
     }
-    
+
+    createGUI() {
+
+        if (!this.gui) {
+            console.error('GUI is not defined');
+            return;
+        }
+        if (!this.titleGui) {
+            console.error('Title GUI is not defined');
+            return;
+        }
+        
+        var folder = this.gui.addFolder(this.titleGui);
+
+        // Control para la rotación Yaw (base del cañón)
+        folder.add(this.pivoteGeneral.rotation, 'y', -Math.PI, Math.PI, 0.01).name('Rotación General');
+
+        // Control para la rotación Pitch (cuerpo del cañón)
+        folder.add(this.pivoteCañon.rotation, 'z', -Math.PI / 4, Math.PI / 4, 0.01).name('Elevación Cañon');
+    }
+
+    giroCañon(){
+        this.pivoteGeneral.rotateY(-Math.PI/300);
+    }
 }
 
-export { Cañon};
+export { Cañon };
+
+
+
+

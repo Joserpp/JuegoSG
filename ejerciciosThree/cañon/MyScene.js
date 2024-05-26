@@ -8,7 +8,7 @@ import { Stats } from '../libs/stats.module.js'
 
 // Clases de mi proyecto
 
-import { MyBox } from './cañon.js'
+import { Cañon } from './cañon.js'
 
 /// La clase fachada del modelo
 /**
@@ -23,7 +23,7 @@ class MyScene extends THREE.Scene {
     this.renderer = this.createRenderer(myCanvas);
     
     // Se crea la interfaz gráfica de usuario
-    this.gui = this.createGUI ();
+    this.gui = this.createGUI();
 
     this.initStats();
     
@@ -45,7 +45,7 @@ class MyScene extends THREE.Scene {
     // Por último creamos el modelo.
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
-    this.model = new MyBox(this.gui, "barrido");
+    this.model = new Cañon(this.gui, "cañon");
     this.add (this.model);
 
   }

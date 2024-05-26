@@ -26,17 +26,16 @@ class Rueda extends THREE.Object3D{
         };
 
         const geometry = new THREE.ExtrudeGeometry(rueda, extrudeSettings);
-        var material = new THREE.MeshStandardMaterial({
-            color: 0X000000, 
-        });
+        var material = new THREE.MeshStandardMaterial({color: 0X000000});
         const ruedaMesh = new THREE.Mesh(geometry, material);
         ruedaMesh.translateZ(-0.25);
         this.add(ruedaMesh);
 
         const llanta = new THREE.CylinderGeometry(0.85, 0.85, 0.7);
-        var materialLlanta = new THREE.MeshStandardMaterial({
+        /* var materialLlanta = new THREE.MeshStandardMaterial({
             map: texture 
-        });
+        }); */
+        var texture = new THREE.TextureLoader().load('../imgs/llanta.png');
         var materialLlanta = new THREE.MeshBasicMaterial ({map: texture});
         this.llantaMesh = new THREE.Mesh(llanta, materialLlanta);
         this.llantaMesh.rotateX(Math.PI/2);

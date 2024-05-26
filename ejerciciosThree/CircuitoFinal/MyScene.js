@@ -50,7 +50,7 @@ class MyScene extends THREE.Scene {
     /***************************/
     this.circuito = new Circuito();
     this.splineCoche = this.circuito.getPathFromTorusKnot();
-    this.cañon = new Cañon();
+    this.cañon = new Cañon(this.gui, "cañon");
     
     this.coche = new Coche(this.gui, "coche", '../coche/10600_RC_ Car_SG_v2_L3.mtl', '../coche/10600_RC_ Car_SG_v2_L3.obj');
 
@@ -216,7 +216,7 @@ class MyScene extends THREE.Scene {
     if(cajaMuro.intersectsBox(cajaCoche)){
 
         console.log("choca muro");
-        this.apagarLuces();    
+        /* this.apagarLuces(); */    
     }
   }
 
@@ -478,12 +478,12 @@ class MyScene extends THREE.Scene {
 
   moverIzquierda(){
     this.coche.rotation.z -= 0.008;
-    this.cañon.rotation.z -= 0.008;
+    this.cañon.rotateZ(-0.008);
   }
   
   moverDerecha(){
     this.coche.rotation.z += 0.008;
-    this.cañon.rotation.z += 0.008;
+    this.cañon.rotateZ(0.008);
   }
 
   /******************/
@@ -546,15 +546,15 @@ class MyScene extends THREE.Scene {
 
   apagarLuces() {
     this.setAmbientIntensity(0);
-/*     this.setLightPower(0);
- */    this.renderer.setClearColor(new THREE.Color(0x222222), 1.0); 
+    /* this.setLightPower(0); */
+    this.renderer.setClearColor(new THREE.Color(0x222222), 1.0); 
   }
 
   encenderLuces() {
     this.setAmbientIntensity(10);
-/*     this.setLightPower(1); 
- */    this.renderer.setClearColor(new THREE.Color(0xEEEEEE), 1.0);       
-}
+    /* this.setLightPower(1);  */
+    this.renderer.setClearColor(new THREE.Color(0xEEEEEE), 1.0);       
+  }
   
   createRenderer (myCanvas) {
     // Se recibe el lienzo sobre el que se van a hacer los renderizados. Un div definido en el html.
@@ -600,11 +600,12 @@ class MyScene extends THREE.Scene {
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render (this, this.getCamera());
+    this.cañon.giroCañon();
 
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
     // Si no existiera esta línea,  update()  se ejecutaría solo la primera vez.
-    requestAnimationFrame(() => this.update())
+    requestAnimationFrame(() => this.update());
     this.animacionCoche();
 
     this.choqueMuros( this.cajaMuro,this.coche.getCaja());
