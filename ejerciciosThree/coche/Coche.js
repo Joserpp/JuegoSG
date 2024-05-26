@@ -1,6 +1,7 @@
 import * as THREE from '../libs/three.module.js'
 import { MTLLoader } from '../libs/MTLLoader.js'
 import { OBJLoader } from '../libs/OBJLoader.js'
+import { Cañon } from '../cañon/cañon.js'
 
 class Coche extends THREE.Object3D{
     constructor(gui, titleGui, material, obj){
@@ -12,11 +13,11 @@ class Coche extends THREE.Object3D{
 
     }
 
-
     crearCoche( material, obj){
         
         var materialLoader = new MTLLoader();
         var objectLoader = new OBJLoader();
+        this.cañon = new Cañon();
 
         materialLoader.load(material,
             (materials) => {
@@ -26,7 +27,10 @@ class Coche extends THREE.Object3D{
                         object.scale.set(0.005,0.005,0.005);
                         object.position.set(0, 0.25,0);
                         object.rotateX(-Math.PI/2);
-                        this.add(object); 
+                        this.add(object);
+
+                        /* object.add(this.cañon);
+                        this.cañon.position.set(0, 1, 0); */
                     }, null, null
                 );
             }

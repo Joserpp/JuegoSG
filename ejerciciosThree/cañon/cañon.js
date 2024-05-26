@@ -63,6 +63,9 @@ class Cañon extends THREE.Object3D {
 
 
         var resultado=csg.toMesh();
+        resultado.rotateY(-Math.PI/2);
+        resultado.scale.set(0.03,0.03,0.03);
+        resultado.position.set(0, 0.3, 0);
 
         this.add(resultado);
     }

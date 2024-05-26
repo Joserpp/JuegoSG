@@ -49,14 +49,23 @@ class MyScene extends THREE.Scene {
     /* Creación de los objetos */
     /***************************/
     this.circuito = new Circuito();
-    this.splineCoche = this.circuito.getPathFromTorusKnot(); // Obtenemos el spline, para el coche, de nuestro circuito
+    this.splineCoche = this.circuito.getPathFromTorusKnot();
+    this.cañon = new Cañon();
     
     this.coche = new Coche(this.gui, "coche", '../coche/10600_RC_ Car_SG_v2_L3.mtl', '../coche/10600_RC_ Car_SG_v2_L3.obj');
-    
+
     // Varriables para la velocidad del coche
     this.reloj = new THREE.Clock();
     this.velocidad = 1/30;
-    this.t = 1;
+    this.t = 0;
+
+    var geometriaTubo = this.circuito.getGeometria();
+    this.tubo = geometriaTubo;
+    this.path = geometriaTubo.parameters.path;
+    this.radio = geometriaTubo.parameters.radius;
+    this.segmentos = geometriaTubo.parameters.tubularSegments;
+    
+    this.nodo = new THREE.Object3D();
     
     this.muro  = new Obstaculo(this.gui, "muro", 0, 0.3, 0);
     this.muro1 = new Obstaculo(this.gui, "muro1", 0, -0.3, 0);
@@ -83,10 +92,8 @@ class MyScene extends THREE.Scene {
     this.animacionCoche();
 
     this.createCameras();
-
-        
     
-    this.colocarEnCircuito(this.muro, 0.5);
+    this.colocarEnCircuito(this.muro, 0.45);
     this.colocarEnCircuito(this.muro1, 0.8);
     this.colocarEnCircuito(this.muro2, 0.2);
 
@@ -163,8 +170,8 @@ class MyScene extends THREE.Scene {
 
   
   setVelocidad(){
-    /* this.velocidad=this.velocidad*(1/0.9); */
-    this.velocidad *= 2;
+    this.velocidad=this.velocidad*(1/0.9);
+    /* this.velocidad *= 1.1;*/
   }  
   /***********/
   /* Picking */
@@ -196,6 +203,10 @@ class MyScene extends THREE.Scene {
 
     var caja = new THREE.Box3();
     caja.setFromObject(objeto);
+
+    /* var caja2=new THREE.Box3Helper(caja, 0x000000);
+    this.add(caja2);
+    caja2.visible=true; */
 
     return caja;
   }
@@ -330,14 +341,6 @@ class MyScene extends THREE.Scene {
   }
 
   animacionCoche(){
-
-    var geometriaTubo = this.circuito.getGeometria();
-    this.tubo = geometriaTubo;
-    this.path = geometriaTubo.parameters.path;
-    this.radio = geometriaTubo.parameters.radius;
-    this.segmentos = geometriaTubo.parameters.tubularSegments;
-    
-    this.nodo = new THREE.Object3D();
     
     var posTmp = this.path.getPointAt(this.t);
     this.nodo.position.copy(posTmp);
@@ -350,8 +353,6 @@ class MyScene extends THREE.Scene {
 
     this.segmentos = 100;
     this.binormales = this.splineCoche.computeFrenetFrames(this.segmentos,true).binormals;
-    
-    
 
     var segundosTrancurridos = this.reloj.getDelta();
     
@@ -362,11 +363,14 @@ class MyScene extends THREE.Scene {
     
     this.t += this.velocidad * segundosTrancurridos;
 
-    if(this.t > 1){
+    if(this.t >= 1){
       this.t = 0;
     }
 
+    this.coche.actualizarCaja();
+
     this.nodo.add(this.coche);
+    this.nodo.add(this.cañon);
 
    /*  var origen = {t : 0};
     var fin = {t : 1};
@@ -474,10 +478,12 @@ class MyScene extends THREE.Scene {
 
   moverIzquierda(){
     this.coche.rotation.z -= 0.008;
+    this.cañon.rotation.z -= 0.008;
   }
   
   moverDerecha(){
     this.coche.rotation.z += 0.008;
+    this.cañon.rotation.z += 0.008;
   }
 
   /******************/
@@ -608,7 +614,6 @@ class MyScene extends THREE.Scene {
     // Si no existiera esta línea,  update()  se ejecutaría solo la primera vez.
     requestAnimationFrame(() => this.update())
     this.animacionCoche();
-    this.coche.actualizarCaja();
 
     this.choqueMuros( this.cajaMuro,this.coche.getCaja());
     this.choqueMuros( this.cajaMuro1,this.coche.getCaja());
