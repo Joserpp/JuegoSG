@@ -6,8 +6,11 @@ class Bateria extends THREE.Object3D{
         super();
 
         var texture = new THREE.TextureLoader().load('../imgs/pila.png');
-        var materialPila = new THREE.MeshBasicMaterial ({map: texture, side: THREE.FrontSide});
-
+        var materialPila = new THREE.MeshPhongMaterial({
+            map: texture, 
+            side: THREE.FrontSide, 
+            shininess: 30 
+        });
         var cilindro = new THREE.CylinderGeometry(0.5, 0.5, 1.5, 100);
         var cilindroMesh = new THREE.Mesh(cilindro, materialPila);
 
@@ -20,7 +23,9 @@ class Bateria extends THREE.Object3D{
         this.add(cilindroMesh);
 
         var base = new THREE.CircleGeometry(0.5,100);
-        var materialbase = new THREE.MeshStandardMaterial({color: 0X808080});
+        var materialbase = new THREE.MeshStandardMaterial({
+            color: 0x808080 
+        });
         var baseMesh = new THREE.Mesh(base, materialbase);
         baseMesh.rotateX(-(Math.PI/2));
         baseMesh.translateZ(0.7501);

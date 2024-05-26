@@ -16,7 +16,13 @@ class Circuito extends THREE.Object3D {
         curve.tension = 0.5; 
         
         this.geometria = new THREE.TubeGeometry(curve, resolucion, radio, segmentos, false);
-        this.material = new THREE.MeshNormalMaterial();
+        this.material = new THREE.MeshPhongMaterial({
+            color: 0x333333, 
+            shininess: 30,
+            specular: 0x555555,
+            flatShading: true
+        });
+
         this.circuito = new THREE.Mesh(this.geometria, this.material);
         this.add(this.circuito);
     }

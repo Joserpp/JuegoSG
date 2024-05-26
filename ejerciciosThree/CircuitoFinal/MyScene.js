@@ -216,7 +216,7 @@ class MyScene extends THREE.Scene {
     if(cajaMuro.intersectsBox(cajaCoche)){
 
         console.log("choca muro");
-      
+        this.apagarLuces();    
     }
   }
 
@@ -225,7 +225,7 @@ class MyScene extends THREE.Scene {
     if(cajaBateria.intersectsBox(cajaCoche)){
 
       console.log("choca bateria");
-      
+      this.encenderLuces();
     }
   }
 
@@ -513,7 +513,7 @@ class MyScene extends THREE.Scene {
       .onChange ( (value) => this.setLightPower(value) );
     
     // Otro para la intensidad de la luz ambiental
-    folder.add (this.guiControls, 'ambientIntensity', 0, 1, 0.05)
+    folder.add (this.guiControls, 'ambientIntensity', 0, 10, 0.05)
       .name('Luz ambiental: ')
       .onChange ( (value) => this.setAmbientIntensity(value) );
       
@@ -533,36 +533,28 @@ class MyScene extends THREE.Scene {
     this.ambientLight = new THREE.AmbientLight('white', this.guiControls.ambientIntensity);
     // La añadimos a la escena
     this.add (this.ambientLight);
-    
-    // Se crea una luz focal que va a ser la luz principal de la escena
-    // La luz focal, además tiene una posición, y un punto de mira
-    // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
-    // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
-    this.pointLight = new THREE.PointLight( 0xff0000 );
-    this.pointLight.power = this.guiControls.lightPower;
-    this.pointLight.position.set( 0, 3, 0 );
-    this.add (this.pointLight);
-
-    this.pointLight = new THREE.PointLight( 0x00ff00 );
-    this.pointLight.power = this.guiControls.lightPower;
-    this.pointLight.position.set( 3, 3, 0.5 );
-    this.add (this.pointLight);
-
-    this.pointLight = new THREE.PointLight( 0x0000ff );
-    this.pointLight.power = this.guiControls.lightPower;
-    this.pointLight.position.set( -3, 3, 0.5 );
-    this.add (this.pointLight);
-
-
+  
   }
   
-  setLightPower (valor) {
+  /* setLightPower (valor) {
     this.pointLight.power = valor;
-  }
+  } */
 
   setAmbientIntensity (valor) {
     this.ambientLight.intensity = valor;
   }  
+
+  apagarLuces() {
+    this.setAmbientIntensity(0);
+/*     this.setLightPower(0);
+ */    this.renderer.setClearColor(new THREE.Color(0x222222), 1.0); 
+  }
+
+  encenderLuces() {
+    this.setAmbientIntensity(10);
+/*     this.setLightPower(1); 
+ */    this.renderer.setClearColor(new THREE.Color(0xEEEEEE), 1.0);       
+}
   
   createRenderer (myCanvas) {
     // Se recibe el lienzo sobre el que se van a hacer los renderizados. Un div definido en el html.
