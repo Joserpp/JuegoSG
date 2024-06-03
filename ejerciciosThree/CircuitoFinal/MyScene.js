@@ -58,7 +58,7 @@ class MyScene extends THREE.Scene {
 
     // Varriables para la velocidad del coche
     this.reloj = new THREE.Clock();
-    this.velocidad = 1/30;
+    this.velocidad = 1/70;
     this.t = 0;
     this.rotacion = 0;
     this.sentido = 1;
@@ -67,7 +67,7 @@ class MyScene extends THREE.Scene {
     this.limiteInf = -Math.PI / 4;
 
     this.puntuacion = 0;
-    this.balas = 5;
+    this.balas = 15;
     this.vidas = 3;
 
     var geometriaTubo = this.circuito.getGeometria();
@@ -125,7 +125,7 @@ class MyScene extends THREE.Scene {
     this.colocarEnCircuito(this.bala2, 0.9);
 
     this.colocarEnCircuito(this.bombilla, 0.2);
-    this.colocarEnCircuito(this.bombilla1, 0.3);
+    this.colocarEnCircuito(this.bombilla1, 0.33);
     this.colocarEnCircuito(this.bombilla2, 0.5);
 
     this.colocarEnCircuito(this.corazon, 0.25);
@@ -148,14 +148,47 @@ class MyScene extends THREE.Scene {
     this.cajaBala1 = this.crearCaja(this.bala1);
     this.cajaBala2 = this.crearCaja(this.bala2);
 
-    this.cajaBombilla = this.crearCaja(this.bombilla);
-    this.cajaBombilla1 = this.crearCaja(this.bombilla1);
-    this.cajaBombilla2 = this.crearCaja(this.bombilla2);
+    const checkBombillaReady = setInterval(() => {
+      if (this.bombilla.objeto) {
+          this.cajaBombilla = this.crearCaja(this.bombilla.objeto);
+          clearInterval(checkBombillaReady);
+      }
+    }, 100);
 
-    this.cajaCorazon = this.crearCaja(this.corazon);
-    this.cajaCorazon1 = this.crearCaja(this.corazon1);
-    this.cajaCorazon2 = this.crearCaja(this.corazon2);
+    const checkBombillaReady1 = setInterval(() => {
+      if (this.bombilla1.objeto) {
+        this.cajaBombilla1 = this.crearCaja(this.bombilla1.objeto);
+        clearInterval(checkBombillaReady1);
+      }
+    }, 100);
 
+    const checkBombillaReady2 = setInterval(() => {
+      if (this.bombilla2.objeto) {
+        this.cajaBombilla2 = this.crearCaja(this.bombilla2.objeto);
+        clearInterval(checkBombillaReady2);
+      }
+    }, 100);
+
+    const checkCorazonReady = setInterval(() => {
+      if (this.corazon.objeto) {
+        this.cajaCorazon = this.crearCaja(this.corazon.objeto);
+        clearInterval(checkCorazonReady);
+      }
+    }, 100);
+
+    const checkCorazonReady1 = setInterval(() => {
+      if (this.corazon1.objeto) {
+        this.cajaCorazon1 = this.crearCaja(this.corazon1.objeto);
+        clearInterval(checkCorazonReady1);
+      }
+    }, 100);
+
+    const checkCorazonReady2 = setInterval(() => {
+      if (this.corazon2.objeto) {
+        this.cajaCorazon2 = this.crearCaja(this.corazon2.objeto);
+        clearInterval(checkCorazonReady2);
+      }
+    }, 100);
     
     /************************************/
     /* Añadimos los objetos a la escena */
@@ -228,16 +261,26 @@ class MyScene extends THREE.Scene {
     var pickedObjects = this.raycaster.intersectObjects(this.pickableObjects, true);
 
     if(pickedObjects.length > 0){
-
-      this.puntuacion += 1;
-      this.balas -= 1;
-      console.log('Le he dao con picking');
-      console.log('Balas: ' + this.balas + ' Punrtuacion: ' + this.puntuacion);
+      if(this.balas>0){
+        this.puntuacion += 1;
+        this.balas -= 1;
+        console.log('Le he dao con picking');
+        console.log('Balas: ' + this.balas + ' Punrtuacion: ' + this.puntuacion);
+      }
+      else if(this.balas == 0){
+        console.log('No quedan balas');
+      }
     }
     else{
-      this.balas -= 1;
-      console.log('No le he dao con picking');
-      console.log('Balas: ' + this.balas + ' Punrtuacion: ' + this.puntuacion);
+      if(this.balas>0){
+        this.balas -= 1;
+        console.log('No le he dao con picking');
+        console.log('Balas: ' + this.balas + ' Punrtuacion: ' + this.puntuacion);
+      }
+      else if(this.balas == 0){
+        console.log('No quedan balas');
+      }
+      
     }
   }
 
@@ -250,9 +293,9 @@ class MyScene extends THREE.Scene {
     var caja = new THREE.Box3();
     caja.setFromObject(objeto);
 
-    /* var caja2=new THREE.Box3Helper(caja, 0x000000);
+    var caja2 = new THREE.Box3Helper(caja, 0x000000);
     this.add(caja2);
-    caja2.visible=true; */
+    caja2.visible = true;
 
     return caja;
   }
@@ -260,27 +303,47 @@ class MyScene extends THREE.Scene {
   choqueMuros(cajaMuro,cajaCoche){
     
     if(cajaMuro.intersectsBox(cajaCoche)){
-
-        console.log("choca muro");
-        this.apagarLuces();    
+      console.log("-1 Vida. Vidas totales: " + this.vidas);
+      this.apagarLuces();
     }
   }
 
   choqueBaterias(cajaBateria,cajaCoche){
     
     if(cajaBateria.intersectsBox(cajaCoche)){
-
       console.log("choca bateria");
-      this.encenderLuces();
     }
   }
 
   choqueBalas(cajaBala,cajaCoche){ 
 
     if(cajaBala.intersectsBox(cajaCoche)){
-      this.balas += 2;
-      console.log("+2 balas, Balas totales: " + this.balas);
+      this.balas = 15;
+      console.log("Balas recargadas");
     }
+  }
+
+  choqueBombillas(cajaBombilla,cajaCoche){ 
+
+    if(cajaBombilla.intersectsBox(cajaCoche)){
+      this.encenderLuces();
+      console.log("¡Se hizo la luz!");
+    }
+  }
+
+  choqueCorazones(objeto,cajaCorazon,cajaCoche){
+
+    if (!objeto.colisionado && cajaCorazon.intersectsBox(cajaCoche)) {
+      objeto.colisionado = true; 
+      if(this.vidas<3){
+        this.vidas+=1;
+      }
+      console.log("Corazón obtenido. Vidas:", this.vidas);
+  }
+  else if(objeto.colisionado && !cajaCorazon.intersectsBox(cajaCoche)){
+    objeto.colisionado = false; 
+
+  }
   }
 
   /******************************/
@@ -333,7 +396,7 @@ class MyScene extends THREE.Scene {
   createCameras(){
 
     this.camaraSubjetiva = this.createCamaraSubjetiva();
-    this.camaraGeneral = this.createCameraGeneral();
+    this.camaraGeneral = this.createCameraGeneral();    
 
     this.camaraActiva = this.camaraGeneral;
     this.add(this.camaraActiva);
@@ -497,17 +560,17 @@ class MyScene extends THREE.Scene {
   /*******************/
 
   giroCocheDown(event){
-    if (event.which === 37) {
+    if (event.which === 37 || event.which === 65) {
       this.left = true;
-    } else if (event.which === 39) {
+    } else if (event.which === 39 || event.which === 68) {
         this.right = true;
     }
   }
 
   giroCocheUp(event){
-    if (event.which === 37) {
+    if (event.which === 37 || event.which === 65) {
       this.left = false;
-    } else if (event.which === 39) {
+    } else if (event.which === 39 || event.which === 68) {
         this.right = false;
     }
   }
@@ -522,13 +585,13 @@ class MyScene extends THREE.Scene {
   }
 
   moverIzquierda(){
-    this.coche.rotation.z -= 0.3 * this.velocidad;
-    this.cañon.rotateZ(-0.3 * this.velocidad);
+    this.coche.rotation.z -= 1 * this.velocidad;
+    this.cañon.rotateZ(-1 * this.velocidad);
   }
   
   moverDerecha(){
-    this.coche.rotation.z += 0.3 * this.velocidad;
-    this.cañon.rotateZ(0.3 * this.velocidad);
+    this.coche.rotation.z += 1 * this.velocidad;
+    this.cañon.rotateZ(1 * this.velocidad);
   }
 
   /******************/
@@ -651,6 +714,8 @@ class MyScene extends THREE.Scene {
     
     return renderer;  
   }
+
+
   
   onWindowResize () {
     // Este método es llamado cada vez que el usuario modifica el tamapo de la ventana de la aplicación
@@ -701,6 +766,31 @@ class MyScene extends THREE.Scene {
     this.choqueBaterias( this.cajaBateria,this.coche.getCaja());
     this.choqueBaterias( this.cajaBateria1,this.coche.getCaja());
     this.choqueBaterias( this.cajaBateria2,this.coche.getCaja());
+
+    if(this.cajaBombilla){
+      this.choqueBombillas(this.cajaBombilla,this.coche.getCaja());
+    }
+
+    if(this.cajaBombilla1){
+      this.choqueBombillas(this.cajaBombilla1,this.coche.getCaja());
+    }
+
+    if(this.cajaBombilla2){
+      this.choqueBombillas(this.cajaBombilla2,this.coche.getCaja());
+    }
+
+    if(this.cajaCorazon){
+      this.choqueCorazones(this.corazon,this.cajaCorazon,this.coche.getCaja());
+    }
+
+    if(this.cajaCorazon1){
+      this.choqueCorazones(this.corazon1,this.cajaCorazon1,this.coche.getCaja());
+    }
+
+    if(this.cajaCorazon2){
+      this.choqueCorazones(this.corazon2,this.cajaCorazon2,this.coche.getCaja());
+    }
+
   }
 }
 

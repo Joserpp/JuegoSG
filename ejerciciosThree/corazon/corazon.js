@@ -6,11 +6,14 @@ class Corazon extends THREE.Object3D{
     constructor(gui, titleGui, material, obj, x, y, z, rotacionX, rotacionY, rotacionZ){
         super();
 
-        this.crearBombilla(material, obj, x, y, z, rotacionX, rotacionY, rotacionZ);
+        this.objeto = null; 
+        this.colisionado = false;
+
+        this.crearCorazon(material, obj, x, y, z, rotacionX, rotacionY, rotacionZ);
         this.createGUI(gui, titleGui);
     }
 
-    crearBombilla(material, obj, x, y, z, rotacionX, rotacionY, rotacionZ){
+    crearCorazon(material, obj, x, y, z, rotacionX, rotacionY, rotacionZ){
         var materialLoader = new MTLLoader();
         var objectLoader = new OBJLoader();
 
@@ -19,17 +22,21 @@ class Corazon extends THREE.Object3D{
                 objectLoader.setMaterials(materials);
                 objectLoader.load(obj,
                     (object) => {
-                        object.scale.set(0.005, 0.005, 0.005);
+                        object.scale.set(0.001, 0.001, 0.001);
                         object.position.set(x, y, z);
                         object.rotateX(rotacionX);
                         object.rotateY(rotacionY);
                         object.rotateZ(rotacionZ);
                         this.add(object);
+
+                        this.objeto = object;
+
                     }, null, null
                 );
             }
         );
     }
+
 
     createGUI(gui, titleGui){}
     update () {}

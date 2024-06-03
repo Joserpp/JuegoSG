@@ -37,6 +37,7 @@ class Coche extends THREE.Object3D{
         );
         this.cajaCoche = new THREE.Box3();
         this.actualizarCaja();
+        
     }
 
     actualizarCaja(){

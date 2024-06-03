@@ -10,7 +10,7 @@ class Circuito extends THREE.Object3D {
         var radio = 0.25;
         var segmentos = 20;
 
-        this.geometry = new THREE.TorusKnotGeometry( 2, radio, resolucion, segmentos );
+        this.geometry = new THREE.TorusKnotGeometry( 10, radio, resolucion, segmentos, 3, 4);
 
         const curve = this.getPathFromTorusKnot();
         curve.curveType = 'catmullrom';
