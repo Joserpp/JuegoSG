@@ -14,6 +14,8 @@ import {Rueda} from '../rueda/Rueda.js'
 import {Bala} from '../bala/Bala.js'
 import {Bateria} from '../bateria/Bateria.js'
 import {Cañon} from '../cañon/cañon.js'
+import {Corazon} from '../corazon/corazon.js'
+import {Bombilla} from '../bombilla/bombilla.js'
 import {Obstaculo} from '../obstaculo/obstaculo.js'
 
 
@@ -58,6 +60,15 @@ class MyScene extends THREE.Scene {
     this.reloj = new THREE.Clock();
     this.velocidad = 1/30;
     this.t = 0;
+    this.rotacion = 0;
+    this.sentido = 1;
+    this.velocidadRot = Math.PI / 300;
+    this.limiteSup = Math.PI / 4;
+    this.limiteInf = -Math.PI / 4;
+
+    this.puntuacion = 0;
+    this.balas = 5;
+    this.vidas = 3;
 
     var geometriaTubo = this.circuito.getGeometria();
     this.tubo = geometriaTubo;
@@ -78,6 +89,14 @@ class MyScene extends THREE.Scene {
     this.bala  = new Bala(this.gui, "bala", 0, 0.25, 0, 0, 0, 0);
     this.bala1 = new Bala(this.gui, "bala1", 0, 0.25, 0, 0, 0, 0);
     this.bala2 = new Bala(this.gui, "bala2", 0, 0.25, 0 ,0, 0, 0);
+
+    this.bombilla = new Bombilla(this.gui, "bombilla", "../bombilla/Lamp.mtl", "../bombilla/Lamp.obj", 0, 0.25, 0, 0, 0, 0);
+    this.bombilla1 = new Bombilla(this.gui, "bombilla1", "../bombilla/Lamp.mtl", "../bombilla/Lamp.obj", 0, 0.25, 0, 0, 0, 0);
+    this.bombilla2 = new Bombilla(this.gui, "bombilla2", "../bombilla/Lamp.mtl", "../bombilla/Lamp.obj", 0, 0.25, 0, 0, 0, 0);
+
+    this.corazon = new Corazon(this.gui, "corazon", "../corazon/Love.mtl", "../corazon/Love.obj", 0, 0.25, 0, 0, 0, 0);
+    this.corazon1 = new Corazon(this.gui, "corazon1", "../corazon/Love.mtl", "../corazon/Love.obj", 0, 0.25, 0, 0, 0, 0);
+    this.corazon2 = new Corazon(this.gui, "corazon2", "../corazon/Love.mtl", "../corazon/Love.obj", 0, 0.25, 0, 0, 0, 0);
     
     /********************************************/
     /* Colocacion de los objetos en el circuito */
@@ -105,6 +124,14 @@ class MyScene extends THREE.Scene {
     this.colocarEnCircuito(this.bala1, 0.6);
     this.colocarEnCircuito(this.bala2, 0.9);
 
+    this.colocarEnCircuito(this.bombilla, 0.2);
+    this.colocarEnCircuito(this.bombilla1, 0.3);
+    this.colocarEnCircuito(this.bombilla2, 0.5);
+
+    this.colocarEnCircuito(this.corazon, 0.25);
+    this.colocarEnCircuito(this.corazon1, 0.68);
+    this.colocarEnCircuito(this.corazon2, 0.99);
+
     /*********************************************/
     /* Creación de las cajas para las colisiones */
     /*********************************************/
@@ -121,6 +148,14 @@ class MyScene extends THREE.Scene {
     this.cajaBala1 = this.crearCaja(this.bala1);
     this.cajaBala2 = this.crearCaja(this.bala2);
 
+    this.cajaBombilla = this.crearCaja(this.bombilla);
+    this.cajaBombilla1 = this.crearCaja(this.bombilla1);
+    this.cajaBombilla2 = this.crearCaja(this.bombilla2);
+
+    this.cajaCorazon = this.crearCaja(this.corazon);
+    this.cajaCorazon1 = this.crearCaja(this.corazon1);
+    this.cajaCorazon2 = this.crearCaja(this.corazon2);
+
     
     /************************************/
     /* Añadimos los objetos a la escena */
@@ -136,6 +171,14 @@ class MyScene extends THREE.Scene {
     this.add(this.bala);
     this.add(this.bala1);
     this.add(this.bala2);
+
+    this.add(this.corazon);
+    this.add(this.corazon1);
+    this.add(this.corazon2);
+
+    this.add(this.bombilla);
+    this.add(this.bombilla1);
+    this.add(this.bombilla2);
     
     this.add(this.rueda);
     this.add(this.rueda2);
@@ -162,17 +205,15 @@ class MyScene extends THREE.Scene {
     this.stats = stats;
   }
 
-
-
   /***************************/
   /* Actualizar la velocidad */
   /***************************/
 
-  
   setVelocidad(){
     this.velocidad=this.velocidad*(1/0.9);
     /* this.velocidad *= 1.1;*/
-  }  
+  }
+  
   /***********/
   /* Picking */
   /***********/
@@ -188,10 +229,15 @@ class MyScene extends THREE.Scene {
 
     if(pickedObjects.length > 0){
 
+      this.puntuacion += 1;
+      this.balas -= 1;
       console.log('Le he dao con picking');
+      console.log('Balas: ' + this.balas + ' Punrtuacion: ' + this.puntuacion);
     }
     else{
+      this.balas -= 1;
       console.log('No le he dao con picking');
+      console.log('Balas: ' + this.balas + ' Punrtuacion: ' + this.puntuacion);
     }
   }
 
@@ -216,7 +262,7 @@ class MyScene extends THREE.Scene {
     if(cajaMuro.intersectsBox(cajaCoche)){
 
         console.log("choca muro");
-        /* this.apagarLuces(); */    
+        this.apagarLuces();    
     }
   }
 
@@ -232,9 +278,8 @@ class MyScene extends THREE.Scene {
   choqueBalas(cajaBala,cajaCoche){ 
 
     if(cajaBala.intersectsBox(cajaCoche)){
-
-      console.log("choca bala");
-      
+      this.balas += 2;
+      console.log("+2 balas, Balas totales: " + this.balas);
     }
   }
 
@@ -477,13 +522,13 @@ class MyScene extends THREE.Scene {
   }
 
   moverIzquierda(){
-    this.coche.rotation.z -= 0.008;
-    this.cañon.rotateZ(-0.008);
+    this.coche.rotation.z -= 0.3 * this.velocidad;
+    this.cañon.rotateZ(-0.3 * this.velocidad);
   }
   
   moverDerecha(){
-    this.coche.rotation.z += 0.008;
-    this.cañon.rotateZ(0.008);
+    this.coche.rotation.z += 0.3 * this.velocidad;
+    this.cañon.rotateZ(0.3 * this.velocidad);
   }
 
   /******************/
@@ -498,7 +543,7 @@ class MyScene extends THREE.Scene {
     this.guiControls = {
       // En el contexto de una función   this   alude a la función
       lightPower : 100.0,  // La potencia de esta fuente de luz se mide en lúmenes
-      ambientIntensity : 10,   
+      ambientIntensity : 2,   
       axisOnOff : true
     }
 
@@ -533,6 +578,16 @@ class MyScene extends THREE.Scene {
     this.ambientLight = new THREE.AmbientLight('white', this.guiControls.ambientIntensity);
     // La añadimos a la escena
     this.add (this.ambientLight);
+
+    this.redLight = new THREE.AmbientLight('red', 1);
+    this.blueLight = new THREE.AmbientLight('blue', 1);
+    this.greenLight = new THREE.AmbientLight('green', 1);
+
+    this.specularLight = new THREE.DirectionalLight(0xffffb3);
+
+    this.specularLight.position.set(-4,5,0);
+    this.specularLight.rotateZ(Math.PI/4);
+    this.add(this.specularLight);
   
   }
   
@@ -544,16 +599,34 @@ class MyScene extends THREE.Scene {
     this.ambientLight.intensity = valor;
   }  
 
+  setAmbientIntensity1 (valor) {
+    if (valor === 0) {
+      this.add(this.redLight);
+      this.add(this.blueLight);
+      this.add(this.greenLight);
+      this.specularLight.intensity = 1;
+    } else {
+      this.remove(this.redLight);
+      this.remove(this.blueLight);
+      this.remove(this.greenLight);
+      this.specularLight.intensity = 0;
+    }
+  } 
+
   apagarLuces() {
     this.setAmbientIntensity(0);
-    /* this.setLightPower(0); */
-    this.renderer.setClearColor(new THREE.Color(0x222222), 1.0); 
+    this.setAmbientIntensity1(0);
+    this.loader.load('../imagenes/noche.jpg', (texture) => {
+      this.background = texture;
+    });
   }
 
   encenderLuces() {
-    this.setAmbientIntensity(10);
-    /* this.setLightPower(1);  */
-    this.renderer.setClearColor(new THREE.Color(0xEEEEEE), 1.0);       
+    this.setAmbientIntensity(2);
+    this.setAmbientIntensity1(1);
+    this.loader.load('../imagenes/dia.jpg', (texture) => {
+      this.background = texture;
+    });
   }
   
   createRenderer (myCanvas) {
@@ -561,7 +634,7 @@ class MyScene extends THREE.Scene {
     
     // Se instancia un Renderer   WebGL
     var renderer = new THREE.WebGLRenderer();
-    
+  
     // Se establece un color de fondo en las imágenes que genera el render
     renderer.setClearColor(new THREE.Color(0xEEEEEE), 1.0);
     
@@ -570,6 +643,11 @@ class MyScene extends THREE.Scene {
     
     // La visualización se muestra en el lienzo recibido
     $(myCanvas).append(renderer.domElement);
+
+    this.loader = new THREE.TextureLoader();
+      this.loader.load('../imagenes/dia.jpg', (texture) => {
+        this.background = texture;
+      });
     
     return renderer;  
   }
@@ -596,11 +674,15 @@ class MyScene extends THREE.Scene {
     
     this.updateMovimientoCoche();
 
-    // Se actualiza el resto del modelo
-    
-    // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render (this, this.getCamera());
-    this.cañon.giroCañon();
+
+    this.rotacion += this.velocidadRot * this.sentido;
+
+    if (this.rotacion >= this.limiteSup || this.rotacion <= this.limiteInf) {
+      this.sentido *= -1;
+    }
+    var rotacion = this.velocidadRot * this.sentido;
+    this.cañon.giroCañon(rotacion);
 
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".

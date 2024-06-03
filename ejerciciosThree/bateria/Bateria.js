@@ -24,8 +24,9 @@ class Bateria extends THREE.Object3D{
 
         var base = new THREE.CircleGeometry(0.5,100);
         var materialbase = new THREE.MeshStandardMaterial({
-            color: 0x808080 
+            color: 0x808080
         });
+        
         var baseMesh = new THREE.Mesh(base, materialbase);
         baseMesh.rotateX(-(Math.PI/2));
         baseMesh.translateZ(0.7501);

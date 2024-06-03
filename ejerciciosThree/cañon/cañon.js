@@ -7,6 +7,7 @@ class Cañon extends THREE.Object3D {
 
         this.gui = gui;
         this.titleGui = titleGui;
+        this.time = 0;
         
         this.pivoteCañon = new THREE.Object3D();
         this.pivoteGeneral = new THREE.Object3D();
@@ -20,7 +21,7 @@ class Cañon extends THREE.Object3D {
 
         this.crearCañon();
 
-        this.createGUI();
+        /* this.createGUI(); */
     }
 
     
@@ -97,8 +98,9 @@ class Cañon extends THREE.Object3D {
         folder.add(this.pivoteCañon.rotation, 'z', -Math.PI / 4, Math.PI / 4, 0.01).name('Elevación Cañon');
     }
 
-    giroCañon(){
+    giroCañon(rotacion){
         this.pivoteGeneral.rotateY(-Math.PI/300);
+        this.pivoteCañon.rotateZ(rotacion);
     }
 }
 
