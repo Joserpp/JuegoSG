@@ -35,6 +35,13 @@ class MyScene extends THREE.Scene {
     
     // Tendremos una cámara con un control de movimiento con el ratón
     this.createCamera ();
+
+    this.velocidadRot = Math.PI / 300;
+    this.rotacion = 0;
+    this.sentido = 1;
+    this.limiteSup = Math.PI / 4;
+    this.limiteInf = -Math.PI / 4;
+
     
     // Un suelo 
     /* this.createGround (); */
@@ -251,6 +258,14 @@ class MyScene extends THREE.Scene {
     
     // Le decimos al renderizador "visualiza la escena que te indico usando la cámara que te estoy pasando"
     this.renderer.render (this, this.getCamera());
+
+    this.rotacion += this.velocidadRot * this.sentido;
+
+    if (this.rotacion >= this.limiteSup || this.rotacion <= this.limiteInf) {
+      this.sentido *= -1;
+    }
+    var rotacion = this.velocidadRot * this.sentido;
+    this.model.giroCañon(rotacion);
 
     // Este método debe ser llamado cada vez que queramos visualizar la escena de nuevo.
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".

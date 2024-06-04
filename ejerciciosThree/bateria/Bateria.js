@@ -5,6 +5,8 @@ class Bateria extends THREE.Object3D{
     constructor(gui, titleGui,x,y,z,rotacionX,rotacionY,rotacionZ){
         super();
 
+        this.colisionado = false;
+
         var texture = new THREE.TextureLoader().load('../imgs/pila.png');
         var materialPila = new THREE.MeshPhongMaterial({
             map: texture, 

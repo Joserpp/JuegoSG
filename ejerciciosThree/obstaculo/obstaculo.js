@@ -3,6 +3,9 @@ import * as THREE from '../libs/three.module.js'
 class Obstaculo extends THREE.Object3D {
     constructor(gui,titleGui,x,y,z) {
         super();
+
+        this.colisionado = false;
+        
         // Se crea la parte de la interfaz que corresponde a la caja
         // Se crea primero porque otros métodos usan las variables que se definen para la interfaz
         this.crearObstaculo(x,y,z);  

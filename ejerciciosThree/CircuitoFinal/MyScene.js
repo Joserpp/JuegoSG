@@ -17,9 +17,6 @@ import {Cañon} from '../cañon/cañon.js'
 import {Corazon} from '../corazon/corazon.js'
 import {Bombilla} from '../bombilla/bombilla.js'
 import {Obstaculo} from '../obstaculo/obstaculo.js'
-
-
-/* import { CircuitoFinal } from './CircuitoFinal.js' */
 import { Circuito } from '../Circuito/Circuito.js'
 
 /// La clase fachada del modelo
@@ -56,7 +53,7 @@ class MyScene extends THREE.Scene {
     
     this.coche = new Coche(this.gui, "coche", '../coche/10600_RC_ Car_SG_v2_L3.mtl', '../coche/10600_RC_ Car_SG_v2_L3.obj');
 
-    // Varriables para la velocidad del coche
+    // Varriables para el control del coche y el cañón
     this.reloj = new THREE.Clock();
     this.velocidad = 1/70;
     this.t = 0;
@@ -66,9 +63,11 @@ class MyScene extends THREE.Scene {
     this.limiteSup = Math.PI / 4;
     this.limiteInf = -Math.PI / 4;
 
+    // Varriables para la jugabilidad
     this.puntuacion = 0;
-    this.balas = 15;
+    this.balas = 25;
     this.vidas = 3;
+    this.empezar = false;
 
     var geometriaTubo = this.circuito.getGeometria();
     this.tubo = geometriaTubo;
@@ -103,33 +102,40 @@ class MyScene extends THREE.Scene {
     /********************************************/
 
     this.pickableObjects = [];
-    this.rueda  = this.animacionRueda(this.gui, 5000, 0, 0, -1.4);
-    this.rueda2 = this.animacionRueda(this.gui, 5000, 2, 0, 0);
-    this.rueda3 = this.animacionRueda(this.gui, 5000, 0, 2, -0.3);
-    this.rueda4 = this.animacionRueda(this.gui, 5000, 2, -2.6, 0.2);
 
-    this.animacionCoche();
+    const contenedorRuedas = new THREE.Object3D();
+
+    const puntosCircuito = this.circuito.getPathFromTorusKnot().getPoints(500);
+
+    const separacionEntreRuedas = 20;
+    for (let i = 0; i < puntosCircuito.length; i += separacionEntreRuedas) {
+        const punto = puntosCircuito[i];
+        const nuevaRueda = this.animacionRueda(this.gui, 5000, punto.x, punto.y, punto.z);
+        contenedorRuedas.add(nuevaRueda);
+    }
+    
+      this.animacionCoche();
 
     this.createCameras();
     
-    this.colocarEnCircuito(this.muro, 0.45);
-    this.colocarEnCircuito(this.muro1, 0.8);
-    this.colocarEnCircuito(this.muro2, 0.2);
+    this.colocarEnCircuito(this.muro, 0.066);
+    this.colocarEnCircuito(this.muro1, 0.396);
+    this.colocarEnCircuito(this.muro2, 0.726);
 
-    this.colocarEnCircuito(this.bateria, 0.1);
-    this.colocarEnCircuito(this.bateria1, 0.4);
-    this.colocarEnCircuito(this.bateria2, 0.7);
+    this.colocarEnCircuito(this.bateria, 0.132);
+    this.colocarEnCircuito(this.bateria1, 0.462);
+    this.colocarEnCircuito(this.bateria2, 0.792);
 
-    this.colocarEnCircuito(this.bala, 0.3);
-    this.colocarEnCircuito(this.bala1, 0.6);
-    this.colocarEnCircuito(this.bala2, 0.9);
+    this.colocarEnCircuito(this.bala, 0.198);
+    this.colocarEnCircuito(this.bala1, 0.528);
+    this.colocarEnCircuito(this.bala2, 0.858);
 
-    this.colocarEnCircuito(this.bombilla, 0.2);
-    this.colocarEnCircuito(this.bombilla1, 0.33);
-    this.colocarEnCircuito(this.bombilla2, 0.5);
+    this.colocarEnCircuito(this.bombilla, 0.264);
+    this.colocarEnCircuito(this.bombilla1, 0.594);
+    this.colocarEnCircuito(this.bombilla2, 0.924);
 
-    this.colocarEnCircuito(this.corazon, 0.25);
-    this.colocarEnCircuito(this.corazon1, 0.68);
+    this.colocarEnCircuito(this.corazon, 0.33);
+    this.colocarEnCircuito(this.corazon1, 0.66);
     this.colocarEnCircuito(this.corazon2, 0.99);
 
     /*********************************************/
@@ -212,14 +218,53 @@ class MyScene extends THREE.Scene {
     this.add(this.bombilla);
     this.add(this.bombilla1);
     this.add(this.bombilla2);
-    
-    this.add(this.rueda);
-    this.add(this.rueda2);
-    this.add(this.rueda3);
-    this.add(this.rueda4);
-    
+
+    this.add(contenedorRuedas);
+
     this.add(this.circuito); 
     this.add(this.nodo); 
+  }     
+
+  createText(texto) {
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    context.font = 'Bold 20px Arial';
+    context.fillStyle = 'rgba(255,0,0,0.95)';
+    context.fillText(texto, 0, 20);
+
+    var textura = new THREE.Texture(canvas);
+    textura.needsUpdate = true;
+
+    var spriteMaterial = new THREE.SpriteMaterial({ map: textura });
+    var sprite = new THREE.Sprite(spriteMaterial);
+    sprite.scale.set(4, 3, 1.0);
+    return sprite;
+  }
+  
+  updateText(sprite, texto) {
+    var canvas = sprite.material.map.image;
+    var context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillText(texto, 0, 20);
+    sprite.material.map.needsUpdate = true;
+  }
+
+  cambiarVidas(nuevasVidas) {
+    this.vidas = nuevasVidas;
+    this.updateText(this.vidasTexto, 'Vidas: ' + this.vidas);
+    this.updateText(this.vidasTextoSubjetiva, 'Vidas: ' + this.vidas);
+  }
+
+  cambiarBalas(nuevasBalas) {
+    this.balas = nuevasBalas;
+    this.updateText(this.balasTexto, 'Balas: ' + this.balas);
+    this.updateText(this.balasTextoSubjetiva, 'Balas: ' + this.balas);
+  }
+
+  cambiarPuntuacion(nuevaPuntuacion) {
+    this.puntuacion = nuevaPuntuacion;
+    this.updateText(this.puntosTexto, 'Puntos: ' + this.puntuacion);
+    this.updateText(this.puntosTextoSubjetiva, 'Puntos: ' + this.puntuacion);
   }
 
   initStats() {
@@ -244,7 +289,6 @@ class MyScene extends THREE.Scene {
 
   setVelocidad(){
     this.velocidad=this.velocidad*(1/0.9);
-    /* this.velocidad *= 1.1;*/
   }
   
   /***********/
@@ -262,8 +306,8 @@ class MyScene extends THREE.Scene {
 
     if(pickedObjects.length > 0){
       if(this.balas>0){
-        this.puntuacion += 1;
-        this.balas -= 1;
+        this.cambiarPuntuacion(this.puntuacion += 1);
+        this.cambiarBalas(this.balas -= 1);
         console.log('Le he dao con picking');
         console.log('Balas: ' + this.balas + ' Punrtuacion: ' + this.puntuacion);
       }
@@ -273,14 +317,13 @@ class MyScene extends THREE.Scene {
     }
     else{
       if(this.balas>0){
-        this.balas -= 1;
+        this.cambiarBalas(this.balas -= 1);
         console.log('No le he dao con picking');
         console.log('Balas: ' + this.balas + ' Punrtuacion: ' + this.puntuacion);
       }
       else if(this.balas == 0){
         console.log('No quedan balas');
       }
-      
     }
   }
 
@@ -300,25 +343,40 @@ class MyScene extends THREE.Scene {
     return caja;
   }
 
-  choqueMuros(cajaMuro,cajaCoche){
+  choqueMuros(objeto,cajaMuro,cajaCoche){
     
-    if(cajaMuro.intersectsBox(cajaCoche)){
-      console.log("-1 Vida. Vidas totales: " + this.vidas);
+    if (!objeto.colisionado && cajaMuro.intersectsBox(cajaCoche)) {
+      objeto.colisionado = true; 
+      if(this.vidas>0){
+        this.cambiarVidas(this.vidas-=1);
+      }
       this.apagarLuces();
+      console.log("Colision con muro. Vidas:", this.vidas);
+    }
+    else if(objeto.colisionado && !cajaMuro.intersectsBox(cajaCoche)){
+      objeto.colisionado = false; 
+
     }
   }
 
-  choqueBaterias(cajaBateria,cajaCoche){
-    
-    if(cajaBateria.intersectsBox(cajaCoche)){
-      console.log("choca bateria");
+  choqueBaterias(objeto,cajaBateria,cajaCoche){
+
+    if (!objeto.colisionado && cajaBateria.intersectsBox(cajaCoche)) {
+      objeto.colisionado = true; 
+      this.setVelocidad();
+      console.log("choca bateria.Velocidad: ", this.velocidad);
     }
+    else if(objeto.colisionado && !cajaBateria.intersectsBox(cajaCoche)){
+      objeto.colisionado = false; 
+
+    }
+    
   }
 
   choqueBalas(cajaBala,cajaCoche){ 
 
     if(cajaBala.intersectsBox(cajaCoche)){
-      this.balas = 15;
+      this.cambiarBalas(25);
       console.log("Balas recargadas");
     }
   }
@@ -336,14 +394,13 @@ class MyScene extends THREE.Scene {
     if (!objeto.colisionado && cajaCorazon.intersectsBox(cajaCoche)) {
       objeto.colisionado = true; 
       if(this.vidas<3){
-        this.vidas+=1;
-      }
+        this.cambiarVidas(this.vidas+=1);      }
       console.log("Corazón obtenido. Vidas:", this.vidas);
-  }
-  else if(objeto.colisionado && !cajaCorazon.intersectsBox(cajaCoche)){
-    objeto.colisionado = false; 
+    }
+    else if(objeto.colisionado && !cajaCorazon.intersectsBox(cajaCoche)){
+      objeto.colisionado = false; 
 
-  }
+    }
   }
 
   /******************************/
@@ -352,19 +409,19 @@ class MyScene extends THREE.Scene {
 
   createCamaraSubjetiva(){
     
-    const camara = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 50);
+    this.camara = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 50);
     
     const distanciaDetras = 0.8;
     const altura = 0.7;
-    camara.position.set(this.coche.position.x, this.coche.position.y + altura, this.coche.position.z - distanciaDetras);
+    this.camara.position.set(this.coche.position.x, this.coche.position.y + altura, this.coche.position.z - distanciaDetras);
     
     const puntoDeMiraRelativo = new THREE.Vector3(0, 0.5, 0);
 
     const target = new THREE.Vector3();
     target.add(puntoDeMiraRelativo);
-    camara.lookAt(target);
+    this.camara.lookAt(target);
 
-    return camara;
+    return this.camara;
   }
 
   createCameraGeneral(){
@@ -398,7 +455,32 @@ class MyScene extends THREE.Scene {
     this.camaraSubjetiva = this.createCamaraSubjetiva();
     this.camaraGeneral = this.createCameraGeneral();    
 
+    this.vidasTexto = this.createText('Vidas: ' + this.vidas);
+    this.balasTexto = this.createText('Balas: ' + this.balas);
+    this.puntosTexto = this.createText('Puntos: ' + this.puntuacion);
+
+    this.vidasTextoSubjetiva = this.createText('Vidas: ' + this.vidas);
+    this.balasTextoSubjetiva = this.createText('Balas: ' + this.balas);
+    this.puntosTextoSubjetiva = this.createText('Puntos: ' + this.puntuacion);
+    
+    this.camaraGeneral.add(this.vidasTexto);
+    this.camaraGeneral.add(this.balasTexto);
+    this.camaraGeneral.add(this.puntosTexto);
+
+    /* this.camaraSubjetiva.add(this.vidasTextoSubjetiva);
+    this.camaraSubjetiva.add(this.balasTextoSubjetiva);
+    this.camaraSubjetiva.add(this.puntosTextoSubjetiva); */
+
+    this.vidasTexto.position.set(-5, 3,-5);
+    this.balasTexto.position.set(-5, 2.5,-5);
+    this.puntosTexto.position.set(-5, 2,-5); 
+
+    this.vidasTextoSubjetiva.position.set(-2.3,1, -5);
+    this.balasTextoSubjetiva.position.set(-2.3,0.5, -5);
+    this.puntosTextoSubjetiva.position.set(-2.3,0, -5);
+
     this.camaraActiva = this.camaraGeneral;
+    
     this.add(this.camaraActiva);
   }
   
@@ -450,64 +532,38 @@ class MyScene extends THREE.Scene {
 
   animacionCoche(){
     
+    
     var posTmp = this.path.getPointAt(this.t);
     this.nodo.position.copy(posTmp);
-
+  
     var tangente = this.path.getTangentAt(this.t);
     posTmp.add(tangente);
     var segmentoActual = Math.floor(this.t*this.segmentos);
     this.nodo.up = this.tubo.binormals[segmentoActual];
     this.nodo.lookAt(posTmp);
-
-    this.segmentos = 100;
-    this.binormales = this.splineCoche.computeFrenetFrames(this.segmentos,true).binormals;
-
-    var segundosTrancurridos = this.reloj.getDelta();
     
-    if(this.t === 0){
-      console.log('aumento velocidad');
-      this.setVelocidad();
-    }
-    
-    this.t += this.velocidad * segundosTrancurridos;
+    if(this.empezar){
 
-    if(this.t >= 1){
-      this.t = 0;
-    }
+      this.segmentos = 100;
+      this.binormales = this.splineCoche.computeFrenetFrames(this.segmentos,true).binormals;
 
+      var segundosTrancurridos = this.reloj.getDelta();
+      
+      if(this.t === 0){
+        console.log('aumento velocidad');
+        this.setVelocidad();
+      }
+      
+      this.t += this.velocidad * segundosTrancurridos;
+
+      if(this.t >= 1){
+        this.t = 0;
+      }
+    }
     this.coche.actualizarCaja();
 
     this.nodo.add(this.coche);
-    this.nodo.add(this.cañon);
-
-   /*  var origen = {t : 0};
-    var fin = {t : 1};
-    
-    var tiempoDeRecorrido = 40000;
-    
-    var animacion = new TWEEN.Tween(origen).to(fin, tiempoDeRecorrido)
-        .onUpdate(() => {
-            var posicion = this.splineCoche.getPointAt(origen.t);
-            this.nodo.position.copy(posicion);
-            var tangente = this.splineCoche.getTangentAt(origen.t);
-            posicion.add(tangente); 
-            this.nodo.up = this.binormales[Math.floor(origen.t * this.segmentos)];
-            this.nodo.lookAt(posicion); 
-        })
-        .onComplete(() => {
-            tiempoDeRecorrido*0.5;
-            animacion.stop();
-            origen.t = 0; 
-            animacion.to(fin, tiempoDeRecorrido).start();
-        })
-        .repeat(Infinity)
-        .start(); 
-
-        function animate() {
-            requestAnimationFrame(animate);
-            TWEEN.update();
-        }
-        animate();   */     
+    this.nodo.add(this.cañon);   
   }
   
   animacionRueda(gui, tiempoDeRecorrido1, x, y, z){
@@ -574,6 +630,12 @@ class MyScene extends THREE.Scene {
         this.right = false;
     }
   }
+
+  empezarJuego(event){
+    
+    if (event.which === 13)
+      this.empezar = true;
+  }
   
   updateMovimientoCoche(){
     if(this.left){
@@ -616,9 +678,9 @@ class MyScene extends THREE.Scene {
     var folder = gui.addFolder ('Luz y Ejes');
     
     // Se le añade un control para la potencia de la luz puntual
-    folder.add (this.guiControls, 'lightPower', 0, 1000, 20)
+    /* folder.add (this.guiControls, 'lightPower', 0, 1000, 20)
       .name('Luz puntual : ')
-      .onChange ( (value) => this.setLightPower(value) );
+      .onChange ( (value) => this.setLightPower(value) ); */
     
     // Otro para la intensidad de la luz ambiental
     folder.add (this.guiControls, 'ambientIntensity', 0, 10, 0.05)
@@ -626,9 +688,9 @@ class MyScene extends THREE.Scene {
       .onChange ( (value) => this.setAmbientIntensity(value) );
       
     // Y otro para mostrar u ocultar los ejes
-    folder.add (this.guiControls, 'axisOnOff')
+   /*  folder.add (this.guiControls, 'axisOnOff')
       .name ('Mostrar ejes : ')
-      .onChange ( (value) => this.setAxisVisible (value) );
+      .onChange ( (value) => this.setAxisVisible (value) ); */
     
     return gui;
   }
@@ -737,7 +799,6 @@ class MyScene extends THREE.Scene {
       this.cameraControl.update();
     }
     
-    this.updateMovimientoCoche();
 
     this.renderer.render (this, this.getCamera());
 
@@ -753,19 +814,52 @@ class MyScene extends THREE.Scene {
     // Literalmente le decimos al navegador: "La próxima vez que haya que refrescar la pantalla, llama al método que te indico".
     // Si no existiera esta línea,  update()  se ejecutaría solo la primera vez.
     requestAnimationFrame(() => this.update());
-    this.animacionCoche();
+    
+    if(this.vidas > 0 && this.empezar){
+      this.animacionCoche();
+      this.updateMovimientoCoche();
+      
+    }
 
-    this.choqueMuros( this.cajaMuro,this.coche.getCaja());
-    this.choqueMuros( this.cajaMuro1,this.coche.getCaja());
-    this.choqueMuros( this.cajaMuro2,this.coche.getCaja());
+    /* if(this.empezar === false){
+      this.textoEmpezar = this.createText('PULSE ENTER PARA EMPEZAR');
+      this.camaraGeneral.add(this.textoEmpezar);
+      this.textoEmpezar.position.set(1.5,-2.5,-5);
+      this.textoEmpezar.scale.set(3,3, 2);
+
+      this.empezarJuegoSubjetivo = this.createText('PULSE ENTER PARA EMPEZAR');
+      this.camaraSubjetiva.add(this.empezarJuegoSubjetivo);
+      this.empezarJuegoSubjetivo.position.set(1.7,-1.5,-3);
+      this.empezarJuegoSubjetivo.scale.set(3,3, 2);
+    }
+
+    if(this.empezar){
+      this.camaraGeneral.remove(this.textoEmpezar);
+      this.camaraSubjetiva.remove(this.empezarJuegoSubjetivo);
+    } */
+    if(this.vidas==0){
+      this.finalJuego = this.createText('GAME OVER');
+      this.camaraGeneral.add(this.finalJuego);
+      this.finalJuego.position.set(1.5,-2.5,-5);
+      this.finalJuego.scale.set(6,6, 2);
+
+      this.finalJuegoSubjetivo = this.createText('GAME OVER');
+      this.camaraSubjetiva.add(this.finalJuegoSubjetivo);
+      this.finalJuegoSubjetivo.position.set(1.7,-1.5,-3);
+      this.finalJuegoSubjetivo.scale.set(6,6, 2);
+    }
+
+    this.choqueMuros( this.muro,this.cajaMuro,this.coche.getCaja());
+    this.choqueMuros( this.muro1, this.cajaMuro1,this.coche.getCaja());
+    this.choqueMuros( this.muro2, this.cajaMuro2,this.coche.getCaja());
 
     this.choqueBalas( this.cajaBala,this.coche.getCaja());
     this.choqueBalas( this.cajaBala1,this.coche.getCaja());
     this.choqueBalas( this.cajaBala2,this.coche.getCaja());
 
-    this.choqueBaterias( this.cajaBateria,this.coche.getCaja());
-    this.choqueBaterias( this.cajaBateria1,this.coche.getCaja());
-    this.choqueBaterias( this.cajaBateria2,this.coche.getCaja());
+    this.choqueBaterias( this.bateria, this.cajaBateria,this.coche.getCaja());
+    this.choqueBaterias( this.bateria1, this.cajaBateria1,this.coche.getCaja());
+    this.choqueBaterias( this.bateria2, this.cajaBateria2,this.coche.getCaja());
 
     if(this.cajaBombilla){
       this.choqueBombillas(this.cajaBombilla,this.coche.getCaja());
@@ -790,7 +884,6 @@ class MyScene extends THREE.Scene {
     if(this.cajaCorazon2){
       this.choqueCorazones(this.corazon2,this.cajaCorazon2,this.coche.getCaja());
     }
-
   }
 }
 
@@ -800,12 +893,14 @@ $(function () {
   // Se instancia la escena pasándole el  div  que se ha creado en el html para visualizar
   var scene = new MyScene("#WebGL-output");
 
-  // Se añaden los listener de la aplicación. En este caso, el que va a comprobar cuándo se modifica el tamaño de la ventana de la aplicación.
+  // Se añaden los listener de la aplicación.
   window.addEventListener ("resize", () => scene.onWindowResize());
   window.addEventListener("keydown", (event) => scene.cambiarCamara(event));
   window.addEventListener("keydown", (event) => scene.giroCocheDown(event));
   window.addEventListener("keyup", (event) => scene.giroCocheUp(event));
   window.addEventListener("mousedown", (event) => scene.onDocumentMouseDown(event));
+  window.addEventListener("keydown", (event) => scene.empezarJuego(event));
+
   // Que no se nos olvide, la primera visualización.
   scene.update();
 });
