@@ -80,22 +80,40 @@ class MyScene extends THREE.Scene {
     this.muro  = new Obstaculo(this.gui, "muro", 0, 0.3, 0);
     this.muro1 = new Obstaculo(this.gui, "muro1", 0, -0.3, 0);
     this.muro2 = new Obstaculo(this.gui, "muro2", 0.3, 0, 0);
+    this.muro3  = new Obstaculo(this.gui, "muro3", 0, 0.3, 0);
+    this.muro4 = new Obstaculo(this.gui, "muro4", 0, -0.3, 0);
+    this.muro5 = new Obstaculo(this.gui, "muro5", 0.3, 0, 0);
+    this.muro6  = new Obstaculo(this.gui, "muro3", 0, 0.3, 0);
+    this.muro7 = new Obstaculo(this.gui, "muro4", 0, -0.3, 0);
+    this.muro8 = new Obstaculo(this.gui, "muro5", 0.3, 0, 0);
 
     this.bateria  = new Bateria(this.gui, "bateria", -0.3, 0, 0, 0, 0, Math.PI/2);
     this.bateria1 = new Bateria(this.gui, "bateria1", 0, 0.3, 0, 0, 0, 0);
     this.bateria2 = new Bateria(this.gui, "bateria2", 0, 0.3, 0, 0, 0, 0);
+    this.bateria3  = new Bateria(this.gui, "bateria3", -0.3, 0, 0, 0, 0, Math.PI/2);
+    this.bateria4 = new Bateria(this.gui, "bateria4", 0, 0.3, 0, 0, 0, 0);
+    this.bateria5 = new Bateria(this.gui, "bateria5", 0, 0.3, 0, 0, 0, 0);
 
     this.bala  = new Bala(this.gui, "bala", 0, 0.25, 0, 0, 0, 0);
     this.bala1 = new Bala(this.gui, "bala1", 0, 0.25, 0, 0, 0, 0);
     this.bala2 = new Bala(this.gui, "bala2", 0, 0.25, 0 ,0, 0, 0);
+    this.bala3  = new Bala(this.gui, "bala3", 0, 0.25, 0, 0, 0, 0);
+    this.bala4 = new Bala(this.gui, "bala4", 0, 0.25, 0, 0, 0, 0);
+    this.bala5 = new Bala(this.gui, "bala5", 0, 0.25, 0 ,0, 0, 0);
 
     this.bombilla = new Bombilla(this.gui, "bombilla", "../bombilla/Lamp.mtl", "../bombilla/Lamp.obj", 0, 0.25, 0, 0, 0, 0);
     this.bombilla1 = new Bombilla(this.gui, "bombilla1", "../bombilla/Lamp.mtl", "../bombilla/Lamp.obj", 0, 0.25, 0, 0, 0, 0);
     this.bombilla2 = new Bombilla(this.gui, "bombilla2", "../bombilla/Lamp.mtl", "../bombilla/Lamp.obj", 0, 0.25, 0, 0, 0, 0);
+    this.bombilla3 = new Bombilla(this.gui, "bombilla3", "../bombilla/Lamp.mtl", "../bombilla/Lamp.obj", 0, 0.25, 0, 0, 0, 0);
+    this.bombilla4 = new Bombilla(this.gui, "bombilla4", "../bombilla/Lamp.mtl", "../bombilla/Lamp.obj", 0, 0.25, 0, 0, 0, 0);
+    this.bombilla5 = new Bombilla(this.gui, "bombilla5", "../bombilla/Lamp.mtl", "../bombilla/Lamp.obj", 0, 0.25, 0, 0, 0, 0);
 
     this.corazon = new Corazon(this.gui, "corazon", "../corazon/Love.mtl", "../corazon/Love.obj", 0, 0.25, 0, 0, 0, 0);
     this.corazon1 = new Corazon(this.gui, "corazon1", "../corazon/Love.mtl", "../corazon/Love.obj", 0, 0.25, 0, 0, 0, 0);
     this.corazon2 = new Corazon(this.gui, "corazon2", "../corazon/Love.mtl", "../corazon/Love.obj", 0, 0.25, 0, 0, 0, 0);
+    this.corazon3 = new Corazon(this.gui, "corazon3", "../corazon/Love.mtl", "../corazon/Love.obj", 0, 0.25, 0, 0, 0, 0);
+    this.corazon4 = new Corazon(this.gui, "corazon4", "../corazon/Love.mtl", "../corazon/Love.obj", 0, 0.25, 0, 0, 0, 0);
+    this.corazon5 = new Corazon(this.gui, "corazon5", "../corazon/Love.mtl", "../corazon/Love.obj", 0, 0.25, 0, 0, 0, 0);
     
     /********************************************/
     /* Colocacion de los objetos en el circuito */
@@ -118,25 +136,44 @@ class MyScene extends THREE.Scene {
 
     this.createCameras();
     
-    this.colocarEnCircuito(this.muro, 0.066);
-    this.colocarEnCircuito(this.muro1, 0.396);
-    this.colocarEnCircuito(this.muro2, 0.726);
+    this.colocarEnCircuito(this.muro, 0.033);
+    this.colocarEnCircuito(this.muro1, 0.198);
+    this.colocarEnCircuito(this.muro2, 0.363);
+    this.colocarEnCircuito(this.muro3, 0.528);
+    this.colocarEnCircuito(this.muro4, 0.693);
+    this.colocarEnCircuito(this.muro5, 0.858);
+    
+    this.colocarEnCircuito(this.muro6, 0.6);
+    this.colocarEnCircuito(this.muro7, 0.6);
+    this.colocarEnCircuito(this.muro8, 0.6);
 
-    this.colocarEnCircuito(this.bateria, 0.132);
-    this.colocarEnCircuito(this.bateria1, 0.462);
-    this.colocarEnCircuito(this.bateria2, 0.792);
+    this.colocarEnCircuito(this.bateria, 0.066);
+    this.colocarEnCircuito(this.bateria1, 0.231);
+    this.colocarEnCircuito(this.bateria2, 0.396);
+    this.colocarEnCircuito(this.bateria3, 0.561);
+    this.colocarEnCircuito(this.bateria4, 0.726);
+    this.colocarEnCircuito(this.bateria5,0.891);
 
-    this.colocarEnCircuito(this.bala, 0.198);
-    this.colocarEnCircuito(this.bala1, 0.528);
-    this.colocarEnCircuito(this.bala2, 0.858);
+    this.colocarEnCircuito(this.bala, 0.099);
+    this.colocarEnCircuito(this.bala1, 0.264);
+    this.colocarEnCircuito(this.bala2, 0.429);
+    this.colocarEnCircuito(this.bala3, 0.594);
+    this.colocarEnCircuito(this.bala4, 0.759);
+    this.colocarEnCircuito(this.bala5, 0.924);
 
-    this.colocarEnCircuito(this.bombilla, 0.264);
-    this.colocarEnCircuito(this.bombilla1, 0.594);
-    this.colocarEnCircuito(this.bombilla2, 0.924);
+    this.colocarEnCircuito(this.bombilla, 0.132);
+    this.colocarEnCircuito(this.bombilla1, 0.297);
+    this.colocarEnCircuito(this.bombilla2, 0.462);
+    this.colocarEnCircuito(this.bombilla3, 0.627);
+    this.colocarEnCircuito(this.bombilla4, 0.792);
+    this.colocarEnCircuito(this.bombilla5, 0.957);
 
-    this.colocarEnCircuito(this.corazon, 0.33);
-    this.colocarEnCircuito(this.corazon1, 0.66);
-    this.colocarEnCircuito(this.corazon2, 0.99);
+    this.colocarEnCircuito(this.corazon, 0.165);
+    this.colocarEnCircuito(this.corazon1, 0.330);
+    this.colocarEnCircuito(this.corazon2, 0.495);
+    this.colocarEnCircuito(this.corazon3, 0.660);
+    this.colocarEnCircuito(this.corazon4, 0.825);
+    this.colocarEnCircuito(this.corazon5, 0.99);
 
     /*********************************************/
     /* Creación de las cajas para las colisiones */
@@ -145,14 +182,30 @@ class MyScene extends THREE.Scene {
     this.cajaMuro  = this.crearCaja(this.muro);
     this.cajaMuro1 = this.crearCaja(this.muro1);
     this.cajaMuro2 = this.crearCaja(this.muro2);
+    this.cajaMuro3  = this.crearCaja(this.muro3);
+    this.cajaMuro4 = this.crearCaja(this.muro4);
+    this.cajaMuro5 = this.crearCaja(this.muro5);
+    this.cajaMuro6 = this.crearCaja(this.muro6);
+    this.cajaMuro7 = this.crearCaja(this.muro7);
+    this.cajaMuro8 = this.crearCaja(this.muro8);
 
     this.cajaBateria  = this.crearCaja(this.bateria);
     this.cajaBateria1 = this.crearCaja(this.bateria1);
     this.cajaBateria2 = this.crearCaja(this.bateria2);
+    this.cajaBateria3  = this.crearCaja(this.bateria3);
+    this.cajaBateria4 = this.crearCaja(this.bateria4);
+    this.cajaBateria5 = this.crearCaja(this.bateria5);
+
 
     this.cajaBala  = this.crearCaja(this.bala);
     this.cajaBala1 = this.crearCaja(this.bala1);
     this.cajaBala2 = this.crearCaja(this.bala2);
+    this.cajaBala3  = this.crearCaja(this.bala3);
+    this.cajaBala4 = this.crearCaja(this.bala4);
+    this.cajaBala5 = this.crearCaja(this.bala5);
+    
+    
+    
 
     const checkBombillaReady = setInterval(() => {
       if (this.bombilla.objeto) {
@@ -174,6 +227,29 @@ class MyScene extends THREE.Scene {
         clearInterval(checkBombillaReady2);
       }
     }, 100);
+    
+    const checkBombillaReady3 = setInterval(() => {
+      if (this.bombilla3.objeto) {
+          this.cajaBombilla3 = this.crearCaja(this.bombilla3.objeto);
+          clearInterval(checkBombillaReady3);
+      }
+    }, 100);
+
+    const checkBombillaReady4 = setInterval(() => {
+      if (this.bombilla4.objeto) {
+        this.cajaBombilla4 = this.crearCaja(this.bombilla4.objeto);
+        clearInterval(checkBombillaReady4);
+      }
+    }, 100);
+
+    const checkBombillaReady5 = setInterval(() => {
+      if (this.bombilla5.objeto) {
+        this.cajaBombilla5 = this.crearCaja(this.bombilla5.objeto);
+        clearInterval(checkBombillaReady5);
+      }
+    }, 100);
+    
+    
 
     const checkCorazonReady = setInterval(() => {
       if (this.corazon.objeto) {
@@ -196,28 +272,67 @@ class MyScene extends THREE.Scene {
       }
     }, 100);
     
+    const checkCorazonReady3 = setInterval(() => {
+      if (this.corazon3.objeto) {
+        this.cajaCorazon3 = this.crearCaja(this.corazon3.objeto);
+        clearInterval(checkCorazonReady3);
+      }
+    }, 100);
+
+    const checkCorazonReady4 = setInterval(() => {
+      if (this.corazon4.objeto) {
+        this.cajaCorazon4 = this.crearCaja(this.corazon4.objeto);
+        clearInterval(checkCorazonReady4);
+      }
+    }, 100);
+
+    const checkCorazonReady5 = setInterval(() => {
+      if (this.corazon5.objeto) {
+        this.cajaCorazon5 = this.crearCaja(this.corazon5.objeto);
+        clearInterval(checkCorazonReady5);
+      }
+    }, 100);
+    
     /************************************/
     /* Añadimos los objetos a la escena */
     /************************************/
     this.add(this.bateria);
     this.add(this.bateria1);
     this.add(this.bateria2);
+    this.add(this.bateria3);
+    this.add(this.bateria4);
+    this.add(this.bateria5);
 
     this.add(this.muro);
     this.add(this.muro1);
     this.add(this.muro2);
+    this.add(this.muro3);
+    this.add(this.muro4);
+    this.add(this.muro5);
+    this.add(this.muro6);
+    this.add(this.muro7);
+    this.add(this.muro8);
     
     this.add(this.bala);
     this.add(this.bala1);
     this.add(this.bala2);
-
+    this.add(this.bala3);
+    this.add(this.bala4);
+    this.add(this.bala5);
+	
     this.add(this.corazon);
     this.add(this.corazon1);
     this.add(this.corazon2);
+    this.add(this.corazon3);
+    this.add(this.corazon4);
+    this.add(this.corazon5);
 
     this.add(this.bombilla);
     this.add(this.bombilla1);
     this.add(this.bombilla2);
+    this.add(this.bombilla3);
+    this.add(this.bombilla4);
+    this.add(this.bombilla5);
 
     this.add(contenedorRuedas);
 
@@ -228,6 +343,10 @@ class MyScene extends THREE.Scene {
   createText(texto) {
     var canvas = document.createElement('canvas');
     var context = canvas.getContext('2d');
+    context.font = 'Bold 20px Arial'; 
+    var textWidth = context.measureText(texto).width; 
+    canvas.width = textWidth * 2; 
+
     context.font = 'Bold 20px Arial';
     context.fillStyle = 'rgba(255,0,0,0.95)';
     context.fillText(texto, 0, 20);
@@ -296,6 +415,7 @@ class MyScene extends THREE.Scene {
   /***********/
 
   onDocumentMouseDown(event){
+  if(this.empezar){
 
     this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = 1 - 2 * (event.clientY / window.innerHeight);
@@ -324,6 +444,7 @@ class MyScene extends THREE.Scene {
       else if(this.balas == 0){
         console.log('No quedan balas');
       }
+    }
     }
   }
 
@@ -466,18 +587,19 @@ class MyScene extends THREE.Scene {
     this.camaraGeneral.add(this.vidasTexto);
     this.camaraGeneral.add(this.balasTexto);
     this.camaraGeneral.add(this.puntosTexto);
+        
 
-    /* this.camaraSubjetiva.add(this.vidasTextoSubjetiva);
+    /*this.camaraSubjetiva.add(this.vidasTextoSubjetiva);
     this.camaraSubjetiva.add(this.balasTextoSubjetiva);
-    this.camaraSubjetiva.add(this.puntosTextoSubjetiva); */
+    this.camaraSubjetiva.add(this.puntosTextoSubjetiva);*/
 
     this.vidasTexto.position.set(-5, 3,-5);
     this.balasTexto.position.set(-5, 2.5,-5);
     this.puntosTexto.position.set(-5, 2,-5); 
 
-    this.vidasTextoSubjetiva.position.set(-2.3,1, -5);
-    this.balasTextoSubjetiva.position.set(-2.3,0.5, -5);
-    this.puntosTextoSubjetiva.position.set(-2.3,0, -5);
+    this.vidasTextoSubjetiva.position.set(0.0,0.2, -5);
+    this.balasTextoSubjetiva.position.set(0,0, -5);
+    this.puntosTextoSubjetiva.position.set(0,-0.2, -5);
 
     this.camaraActiva = this.camaraGeneral;
     
@@ -550,7 +672,7 @@ class MyScene extends THREE.Scene {
       var segundosTrancurridos = this.reloj.getDelta();
       
       if(this.t === 0){
-        console.log('aumento velocidad');
+        console.log('aumento velocidad. Velocidad=' , this.velocidad);
         this.setVelocidad();
       }
       
@@ -821,45 +943,71 @@ class MyScene extends THREE.Scene {
       
     }
 
-    /* if(this.empezar === false){
+    if (!this.empezar && !this.textoEmpezar) {
       this.textoEmpezar = this.createText('PULSE ENTER PARA EMPEZAR');
       this.camaraGeneral.add(this.textoEmpezar);
       this.textoEmpezar.position.set(1.5,-2.5,-5);
-      this.textoEmpezar.scale.set(3,3, 2);
+      this.textoEmpezar.scale.set(5,5, 1);
 
       this.empezarJuegoSubjetivo = this.createText('PULSE ENTER PARA EMPEZAR');
       this.camaraSubjetiva.add(this.empezarJuegoSubjetivo);
-      this.empezarJuegoSubjetivo.position.set(1.7,-1.5,-3);
-      this.empezarJuegoSubjetivo.scale.set(3,3, 2);
+      this.empezarJuegoSubjetivo.position.set(0.3,0,-2.5);
+      this.empezarJuegoSubjetivo.scale.set(2,2, 1);
     }
 
-    if(this.empezar){
+    if (this.empezar && this.textoEmpezar) {
       this.camaraGeneral.remove(this.textoEmpezar);
+      this.textoEmpezar = null;
+      
       this.camaraSubjetiva.remove(this.empezarJuegoSubjetivo);
-    } */
-    if(this.vidas==0){
+      this.empezarJuegoSubjetivo = null; 
+    } 
+    
+    if (this.vidas == 0 && !this.finalJuego) {
       this.finalJuego = this.createText('GAME OVER');
       this.camaraGeneral.add(this.finalJuego);
       this.finalJuego.position.set(1.5,-2.5,-5);
-      this.finalJuego.scale.set(6,6, 2);
+      this.finalJuego.scale.set(6,6, 1);
+      
+      this.puntuacion2 = this.createText('Puntuacion: ' + this.puntuacion);
+      this.camaraGeneral.add(this.puntuacion2);
+      this.puntuacion2.position.set(1.5,-3.2,-5);
+      this.puntuacion2.scale.set(6,6, 1);
 
       this.finalJuegoSubjetivo = this.createText('GAME OVER');
       this.camaraSubjetiva.add(this.finalJuegoSubjetivo);
-      this.finalJuegoSubjetivo.position.set(1.7,-1.5,-3);
-      this.finalJuegoSubjetivo.scale.set(6,6, 2);
+      this.finalJuegoSubjetivo.position.set(1.7,-1.2,-3);
+      this.finalJuegoSubjetivo.scale.set(6,6, 1);
+      
+      this.puntuacion1 = this.createText('Puntuacion: ' + this.puntuacion);
+      this.camaraSubjetiva.add(this.puntuacion1);
+      this.puntuacion1.position.set(1.7,-1.90,-3);
+      this.puntuacion1.scale.set(6,6, 1);
     }
 
-    this.choqueMuros( this.muro,this.cajaMuro,this.coche.getCaja());
+    this.choqueMuros( this.muro,  this.cajaMuro ,this.coche.getCaja());
     this.choqueMuros( this.muro1, this.cajaMuro1,this.coche.getCaja());
     this.choqueMuros( this.muro2, this.cajaMuro2,this.coche.getCaja());
+    this.choqueMuros( this.muro3, this.cajaMuro3,this.coche.getCaja());
+    this.choqueMuros( this.muro4, this.cajaMuro4,this.coche.getCaja());
+    this.choqueMuros( this.muro5, this.cajaMuro5,this.coche.getCaja());
+    this.choqueMuros( this.muro6, this.cajaMuro6,this.coche.getCaja());
+    this.choqueMuros( this.muro7, this.cajaMuro7,this.coche.getCaja());
+    this.choqueMuros( this.muro8, this.cajaMuro8,this.coche.getCaja());
 
-    this.choqueBalas( this.cajaBala,this.coche.getCaja());
-    this.choqueBalas( this.cajaBala1,this.coche.getCaja());
-    this.choqueBalas( this.cajaBala2,this.coche.getCaja());
+    this.choqueBalas( this.cajaBala,  this.coche.getCaja());
+    this.choqueBalas( this.cajaBala1, this.coche.getCaja());
+    this.choqueBalas( this.cajaBala2, this.coche.getCaja());
+    this.choqueBalas( this.cajaBala3, this.coche.getCaja());
+    this.choqueBalas( this.cajaBala4, this.coche.getCaja());
+    this.choqueBalas( this.cajaBala5, this.coche.getCaja());
 
-    this.choqueBaterias( this.bateria, this.cajaBateria,this.coche.getCaja());
+    this.choqueBaterias( this.bateria,  this.cajaBateria, this.coche.getCaja());
     this.choqueBaterias( this.bateria1, this.cajaBateria1,this.coche.getCaja());
     this.choqueBaterias( this.bateria2, this.cajaBateria2,this.coche.getCaja());
+    this.choqueBaterias( this.bateria3, this.cajaBateria3,this.coche.getCaja());
+    this.choqueBaterias( this.bateria4, this.cajaBateria4,this.coche.getCaja());
+    this.choqueBaterias( this.bateria5, this.cajaBateria5,this.coche.getCaja());
 
     if(this.cajaBombilla){
       this.choqueBombillas(this.cajaBombilla,this.coche.getCaja());
@@ -872,7 +1020,19 @@ class MyScene extends THREE.Scene {
     if(this.cajaBombilla2){
       this.choqueBombillas(this.cajaBombilla2,this.coche.getCaja());
     }
+    
+    if(this.cajaBombilla3){
+      this.choqueBombillas(this.cajaBombilla3,this.coche.getCaja());
+    }
 
+    if(this.cajaBombilla4){
+      this.choqueBombillas(this.cajaBombilla4,this.coche.getCaja());
+    }
+
+    if(this.cajaBombilla5){
+      this.choqueBombillas(this.cajaBombilla5,this.coche.getCaja());
+    }
+	
     if(this.cajaCorazon){
       this.choqueCorazones(this.corazon,this.cajaCorazon,this.coche.getCaja());
     }
@@ -883,6 +1043,18 @@ class MyScene extends THREE.Scene {
 
     if(this.cajaCorazon2){
       this.choqueCorazones(this.corazon2,this.cajaCorazon2,this.coche.getCaja());
+    }
+	
+    if(this.cajaCorazon3){
+      this.choqueCorazones(this.corazon3,this.cajaCorazon3,this.coche.getCaja());
+    }
+
+    if(this.cajaCorazon4){
+      this.choqueCorazones(this.corazon4,this.cajaCorazon4,this.coche.getCaja());
+    }
+
+    if(this.cajaCorazon5){
+      this.choqueCorazones(this.corazon5,this.cajaCorazon5,this.coche.getCaja());
     }
   }
 }
