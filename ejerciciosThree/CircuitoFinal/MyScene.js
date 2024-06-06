@@ -336,9 +336,9 @@ class MyScene extends THREE.Scene {
     var caja = new THREE.Box3();
     caja.setFromObject(objeto);
 
-    var caja2 = new THREE.Box3Helper(caja, 0x000000);
+    /*var caja2 = new THREE.Box3Helper(caja, 0x000000);
     this.add(caja2);
-    caja2.visible = true;
+    caja2.visible = true;*/
 
     return caja;
   }

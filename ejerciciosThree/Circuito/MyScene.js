@@ -167,7 +167,7 @@ class MyScene extends THREE.Scene {
     // La luz focal, además tiene una posición, y un punto de mira
     // Si no se le da punto de mira, apuntará al (0,0,0) en coordenadas del mundo
     // En este caso se declara como   this.atributo   para que sea un atributo accesible desde otros métodos.
-    this.pointLight = new THREE.PointLight( 0xff0000 );
+  /*   this.pointLight = new THREE.PointLight( 0xff0000 );
     this.pointLight.power = this.guiControls.lightPower;
     this.pointLight.position.set( 0, 3, 0 );
     this.add (this.pointLight);
@@ -180,7 +180,7 @@ class MyScene extends THREE.Scene {
     this.pointLight = new THREE.PointLight( 0x0000ff );
     this.pointLight.power = this.guiControls.lightPower;
     this.pointLight.position.set( -3, 3, 0.5 );
-    this.add (this.pointLight);
+    this.add (this.pointLight); */
 
 
   }

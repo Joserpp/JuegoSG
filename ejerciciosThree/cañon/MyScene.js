@@ -53,6 +53,7 @@ class MyScene extends THREE.Scene {
     // El modelo puede incluir su parte de la interfaz gráfica de usuario. Le pasamos la referencia a 
     // la gui y el texto bajo el que se agruparán los controles de la interfaz que añada el modelo.
     this.model = new Cañon(this.gui, "cañon");
+    this.model.position.set(0,-0.3,0);
     this.add (this.model);
 
   }
